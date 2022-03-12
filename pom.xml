@@ -11,7 +11,7 @@
                     <finalName>LilBlu</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>xyz.glabaystudios.web.App</mainClass>
+                            <mainClass>xyz.glabaystudios.web.LilBlu</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx</artifactId>
-            <version>11</version>
+            <version>15.0.1</version>
             <type>pom</type>
         </dependency>
         <dependency>
