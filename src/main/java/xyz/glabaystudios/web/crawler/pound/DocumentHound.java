@@ -1,5 +1,6 @@
 package xyz.glabaystudios.web.crawler.pound;
 
+import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,6 +10,7 @@ import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.crawler.WebsitePageCrawler;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 
 public class DocumentHound implements Runnable, WebsitePageCrawler {
@@ -32,8 +34,8 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 	}
 
 	public void setTarget(String pageTarget) {
-		this.domainPage = pageTarget.startsWith("/") ? pageTarget : "/" + pageTarget;
-		page = getContent();
+		this.domainPage = pageTarget;
+		if (domainPage.endsWith("/")) this.domainPage = domainPage.substring(0, domainPage.length()-1);
 	}
 
 	public void setTargetDocuments(boolean docx, boolean pdf, boolean videos, boolean ppt) {
@@ -43,18 +45,28 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 		searchingForPpt = ppt;
 	}
 
+	public void getPageContent() {
+		page = getContent();
+	}
+
 	Document getContent() {
 		try { // try it with the Secure first
-			return Jsoup.connect(domainHome + domainPage)
-					.userAgent(userAgent)
-					.timeout(30000)
-					.ignoreContentType(true)
-					.get();
+			Connection jsoupConnection = Jsoup.connect(domainPage);
+
+			jsoupConnection.userAgent(userAgent);
+			jsoupConnection.timeout(20000);
+			jsoupConnection.ignoreContentType(true);
+			jsoupConnection.ignoreHttpErrors(true);
+
+			return jsoupConnection.get();
 		} catch (HttpStatusException e) {
-			NetworkExceptionHandler.handleException("getContent" + (domainHome + domainPage), e);
+			NetworkExceptionHandler.handleException("getContent -> " + domainPage, e);
+			return null;
+		} catch (SocketTimeoutException e) {
+//			NetworkExceptionHandler.handleException("getContent -> SocketTimeout " + domainPage, e);
 			return null;
 		} catch (IOException e) {
-			NetworkExceptionHandler.handleException("getContent", e);
+			NetworkExceptionHandler.handleException("getContent -> InputOutput", e);
 			return null;
 		}
 	}
@@ -78,6 +90,7 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 
 	public HashMap<String, String> getFoundDocuments() {
 		System.out.println(getName() + " is Sniffing...");
+		getPageContent();
 		if (page == null) return null;
 		Elements links = page.getElementsByAttribute("href");
 		for (Element link : links) {

@@ -26,8 +26,7 @@ public class PackLeader extends DocumentHound {
 
 	List<DocumentHound> pack;
 	List<String> pagesToSniff;
-
-	StringBuilder sitemap;
+	List<String> additionalMaps;
 
 	ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -35,13 +34,13 @@ public class PackLeader extends DocumentHound {
 
 	public PackLeader(String domain) {
 		super(domain);
-		sitemap = new StringBuilder();
+		pagesToSniff = new ArrayList<>();
 	}
 
-
-	private void connectAndFetchSitemap() {
+	private void connectAndFetchSitemap(String domainsSitemap) {
+		StringBuilder sitemap = new StringBuilder();
 		try {
-			URL domainSitemap = new URL((domainHome + domainPage));
+			URL domainSitemap = new URL(domainsSitemap);
 			InputStreamReader inputStreamReader = new InputStreamReader(domainSitemap.openStream());
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 			String inputLine;
@@ -52,20 +51,50 @@ public class PackLeader extends DocumentHound {
 		} catch (IOException e) {
 			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> InputOutput", e);
 		}
+		applySubSitemapCheck(sitemap.toString());
 	}
 
-	void openConnectionAndReadSitemap() {
-		System.out.println("Looking for the sitemap");
+	private void applySubSitemapCheck(String sitemap) {
+		System.out.println("Looking for the additional sitemaps");
 		try {
-			pagesToSniff = new ArrayList<>();
-			connectAndFetchSitemap();
-
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 
 			InputSource pageSource = new InputSource();
-			pageSource.setCharacterStream(new StringReader(sitemap.toString()));
+			pageSource.setCharacterStream(new StringReader(sitemap));
 
+			Document doc = db.parse(pageSource);
+			NodeList nodes = doc.getElementsByTagName("sitemap");
+			if (nodes != null && nodes.getLength() > 0) {
+				additionalMaps = new ArrayList<>();
+				for (int i = 0; i < nodes.getLength(); i++) {
+					Element element = (Element) nodes.item(i);
+					NodeList name = element.getElementsByTagName("loc");
+					Element line = (Element) name.item(0);
+					String pageLink = getCharacterDataFromElement(line);
+				    additionalMaps.add(pageLink);
+				}
+				additionalMaps.forEach(this::connectAndFetchSitemap);
+			} else openConnectionAndReadSitemap(sitemap);
+		} catch (SAXException e) {
+			NetworkExceptionHandler.handleException("openConnectionAndReadSitemap -> SAX", e);
+		} catch (ParserConfigurationException e) {
+			NetworkExceptionHandler.handleException("openConnectionAndReadSitemap -> ParserConfiguration", e);
+		} catch (IOException e) {
+			NetworkExceptionHandler.handleException("openConnectionAndReadSitemap -> InputOutput", e);
+		}
+	}
+
+	void openConnectionAndReadSitemap(String sitemap) {
+//		System.out.println("Reading map: " + sitemap);
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+
+			InputSource pageSource = new InputSource();
+			pageSource.setCharacterStream(new StringReader(sitemap));
+
+//			System.out.println("Reading: " + pageSource);
 			Document doc = db.parse(pageSource);
 			NodeList nodes = doc.getElementsByTagName("url");
 			for (int i = 0; i < nodes.getLength(); i++) {
@@ -73,7 +102,7 @@ public class PackLeader extends DocumentHound {
 				NodeList name = element.getElementsByTagName("loc");
 				Element line = (Element) name.item(0);
 				String pageLink = getCharacterDataFromElement(line);
-				System.out.printf("Found page: %s%n", pageLink);
+//				System.out.printf("Found page: %s%n", pageLink);
 				if (!filteredOut(pageLink)) pagesToSniff.add(pageLink);
 			}
 		} catch (SAXException e) {
@@ -114,7 +143,7 @@ public class PackLeader extends DocumentHound {
 //			System.out.println("assigning pages");
 			String pageName = link.substring(domainHome.length());
 			DocumentHound docuHoundPack = new DocumentHound(domainHome);
-			docuHoundPack.setTarget(pageName);
+			docuHoundPack.setTarget(link);
 			docuHoundPack.setTargetDocuments(searchingForDocx, searchingForPdf, searchingForVideos, searchingForPpt);
 //			System.out.println("Hound assigned: " + pageName);
 			docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound-" + pageName);
@@ -123,14 +152,20 @@ public class PackLeader extends DocumentHound {
 	}
 
 	public HashMap<String, String> getFoundDocuments() {
-		openConnectionAndReadSitemap();
+		System.out.println("Looking for the sitemap");
+		connectAndFetchSitemap(domainPage);
 		System.out.println("Calling for a pack of: " + pagesToSniff.size());
 		pack = new ArrayList<>(pagesToSniff.size());
 
 		assignHounds();
 		System.out.println("Pack is ready to run!\nRelease the Hounds!");
-		Collection<Callable<HashMap<String, String>>> callables = pack.stream().<Callable<HashMap<String, String>>>map(hound -> hound::getFoundDocuments).collect(Collectors.toList());
-		while(!executorService.isShutdown()) {
+		releaseThePack(pack.stream().<Callable<HashMap<String, String>>>map(hound -> hound::getFoundDocuments).collect(Collectors.toList()));
+		System.out.println("Successful hunt!");
+		return finalCopyOfLinks;
+	}
+
+	private void releaseThePack(Collection<Callable<HashMap<String, String>>> callables) {
+		while (!executorService.isShutdown()) {
 			try {
 				List<Future<HashMap<String, String>>> taskFutureList = executorService.invokeAll(callables);
 				System.out.println("Preparing the pack of: " + taskFutureList.size());
@@ -149,8 +184,6 @@ public class PackLeader extends DocumentHound {
 				executorService.shutdown();
 			}
 		}
-		System.out.println("Successful hunt!");
-		return finalCopyOfLinks;
 	}
 
 	public static String getCharacterDataFromElement(Element e) {

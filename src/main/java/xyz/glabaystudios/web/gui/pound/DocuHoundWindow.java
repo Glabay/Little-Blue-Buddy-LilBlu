@@ -3,6 +3,7 @@ package xyz.glabaystudios.web.gui.pound;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.Controllers;
 import xyz.glabaystudios.web.crawler.pound.PackLeader;
 
@@ -28,7 +29,7 @@ public class DocuHoundWindow {
 	public Button relTheHndBtn;
 	public TextField domainField;
 
-	ExecutorService executorService = Executors.newCachedThreadPool();
+	ExecutorService executorService;
 	Map<String, String> foundDocuments = new HashMap<>();
 
 	Alert domainAlert = new Alert(AlertType.WARNING,  "You must provide a place for the hounds to search<br>Please provide a Domain.", ButtonType.CLOSE, ButtonType.OK);
@@ -44,32 +45,47 @@ public class DocuHoundWindow {
 			unknownDocument.show();
 			return;
 		}
-		String sitemap = "/wp-sitemap.xml";
+		packStatusLabel.setText("");
+		String sitemap = "/sitemap.xml";
 		URL url;
+		String target = domain + sitemap;
 		try {
-			url = new URL((domain + sitemap));
+			url = new URL(target);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.connect();
+			connection.setInstanceFollowRedirects(true);
 			int code = connection.getResponseCode();
 			System.out.println("Code: " + code);
-			if (code == 404) sitemap = "/sitemap.xml";
+			boolean redirect = false;
+			if (code != HttpURLConnection.HTTP_OK) {
+				if (code == HttpURLConnection.HTTP_MOVED_TEMP
+				 || code == HttpURLConnection.HTTP_MOVED_PERM
+				 || code == HttpURLConnection.HTTP_SEE_OTHER)
+					redirect = true;
+			}
+			if (redirect) {
+				target = connection.getHeaderField("Location");
+			} else target = String.valueOf(connection.getURL());
 		} catch (IOException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> InputOutput", e);
 		}
 
+		packStatusLabel.setText("Waking the pack leader...");
 		PackLeader docuHoundPack = new PackLeader(domain);
 		docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound");
-		docuHoundPack.setTarget(sitemap);
+		docuHoundPack.setTarget(target);
 		docuHoundPack.setTargetDocuments(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected());
-
+		executorService = Executors.newSingleThreadExecutor();
+		packStatusLabel.setText("Preparing the pack.");
 		Future<HashMap<String, String>> docuHoundLeader = executorService.submit(docuHoundPack::getFoundDocuments);
-		relTheHndBtn.setDisable(true);
+//		relTheHndBtn.setDisable(true);
+		packStatusLabel.setText("The pack is out hunting for documents...");
 		while(!executorService.isShutdown()) {
 			try {
-				foundDocuments = docuHoundLeader.get(42, TimeUnit.SECONDS);
+				foundDocuments = docuHoundLeader.get(60, TimeUnit.SECONDS);
 			} catch (InterruptedException | ExecutionException | TimeoutException e) {
-				e.printStackTrace();
+				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> " + e.getCause(), e);
 			} finally {
 				updateFoundList();
 				executorService.shutdown();
@@ -78,13 +94,12 @@ public class DocuHoundWindow {
 	}
 
 	private void updateFoundList() {
+		packStatusLabel.setText("Pack is returning...");
 		System.out.println("Done!");
-		System.out.println("Collected: " + foundDocuments.size() + " documents!");
+		foundDocumentList.getItems().clear();
+		System.out.println("Collected: " + foundDocuments.size() + " documents from");
 		int index = 0;
-		for (String link : foundDocuments.keySet()) {
-			String docType = foundDocuments.get(link);
-			foundDocumentList.getItems().add(index++, docType + " | " + link);
-		}
+		for (String link : foundDocuments.keySet()) foundDocumentList.getItems().add(index++, foundDocuments.get(link) + " | " + link);
 		packStatusLabel.setText("Found " + foundDocuments.size() + " documents!");
 		saveDocsBtn.setDisable(false);
 	}
