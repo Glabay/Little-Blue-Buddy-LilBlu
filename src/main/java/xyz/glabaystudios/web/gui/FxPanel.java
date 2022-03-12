@@ -3,12 +3,14 @@ package xyz.glabaystudios.web.gui;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -47,9 +49,13 @@ public class FxPanel {
 
 		domainLabel.setText("DOMAIN NAME HERE");
 		familyLabel.setText("IN-FAMILY OR NOT");
+		mxLabel.setTextFill(Color.BLACK);
+		mxLabel.setUnderline(false);
 		mxLabel.setText("Has ## Mail Server(s)");
 		callTypeLabel.setText("WAS THIS AN INBOUND CALL?");
 		domainNameServerLabel.setText("Name Servers here");
+		domainNameServerLabel.setTextFill(Color.BLACK);
+		domainNameServerLabel.setUnderline(false);
 
 		socialMediaListView.getItems().clear();
 	}
@@ -92,6 +98,20 @@ public class FxPanel {
 			familyLabel.setText("NOT IN FAMILY");
 		}
 		mxLabel.setText(String.format("Has %d mail exchange server%s", lookup.getResult().getMailServerCount(), (lookup.getResult().getMailServerCount() > 1 ? "s" : "")));
+		if (lookup.getResult().getMailServerCount() > 0) {
+			mxLabel.setTextFill(Color.BLUE);
+			mxLabel.setUnderline(true);
+			mxLabel.setOnMouseClicked(mouseEvent -> {
+				if (mxLabel.isUnderline()) {
+					Alert mailServerAlert = new Alert(Alert.AlertType.INFORMATION);
+					StringBuilder message = new StringBuilder();
+					lookup.getResult().getMailServers().forEach(mailServer -> message.append(mailServer).append("\n"));
+					mailServerAlert.setTitle("Mail Exchange Servers.");
+					mailServerAlert.setHeaderText("Mail server for " + lookup.getResult().getDomainName());
+					setMessageAndShow(mailServerAlert, message);
+				}
+			});
+		}
 
 		if (!lookup.getResult().getSocialLinkMap().isEmpty()) {
 			socialMediaListView.setCellFactory(TextFieldListCell.forListView());
@@ -106,8 +126,33 @@ public class FxPanel {
 		if (lookup.getResult().getNameServers().size() > 0) {
 			String labelText = "There are %d Name Servers";
 			domainNameServerLabel.setText(String.format(Locale.getDefault(), labelText, lookup.getResult().getNameServers().size()));
+			domainNameServerLabel.setTextFill(Color.BLUE);
+			domainNameServerLabel.setUnderline(true);
+			domainNameServerLabel.setOnMouseClicked(mouseEvent -> {
+				if (domainNameServerLabel.isUnderline()) {
+					Alert nameServerAlert = new Alert(Alert.AlertType.INFORMATION);
+					StringBuilder message = new StringBuilder();
+					lookup.getResult().getNameServers().forEach(nameServer -> message.append(nameServer).append("\n"));
+					nameServerAlert.setTitle("Name Server List.");
+					nameServerAlert.setHeaderText("Name Servers for " + lookup.getResult().getDomainName());
+					setMessageAndShow(nameServerAlert, message);
+				}
+			});
 		}
 
+	}
+
+	private void setMessageAndShow(Alert nameServerAlert, StringBuilder message) {
+		nameServerAlert.setContentText(message.toString());
+		nameServerAlert.setOnHidden(window -> {
+			Stage stage = (Stage) Controllers.getMainWindow().getScene().getWindow();
+			stage.setAlwaysOnTop(true);
+		});
+		nameServerAlert.setOnShown(window -> {
+			Stage stage = (Stage) Controllers.getMainWindow().getScene().getWindow();
+			stage.setAlwaysOnTop(false);
+		});
+		nameServerAlert.showAndWait();
 	}
 
 	public void requestCloseAction() {

@@ -206,7 +206,9 @@ public class WhoisLookup {
 			ictx = new InitialDirContext(env);
 			attrs = ictx.getAttributes( DOMAIN, new String[] { "MX" });
 			attr = attrs.get("MX");
-			if (attr != null) result.mailServers.add(attr.get(0).toString());
+			if (attr != null) {
+				for (int i = 0; i < attr.size(); i++) result.mailServers.add(attr.get(i).toString());
+			}
 		} catch (NamingException e) {
 			NetworkExceptionHandler.handleException("doLookup -> Naming", e);
 		}
