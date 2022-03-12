@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane prefHeight="320.0" prefWidth="455.0" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="xyz.glabaystudios.web.gui.templates.emails.CallbackWindow">
+   <Label layoutX="9.0" layoutY="6.0" text="Date/Time of Callback:"/>
+   <ComboBox fx:id="timezoneComboBox" layoutX="128.0" layoutY="117.0" prefHeight="25.0" prefWidth="220.0"/>
+   <TextArea fx:id="rebuttalReasonOne" layoutX="2.0" layoutY="166.0" prefHeight="72.0" prefWidth="220.0"
+             promptText="Please provide your Rebuttal used here"/>
+   <TextField fx:id="callbackDateField" alignment="CENTER" layoutX="134.0" layoutY="2.0" prefHeight="25.0"
+              prefWidth="152.0" promptText="March 3, 2022"/>
+   <Spinner fx:id="callbackTimeHr" editable="true" layoutX="291.0" layoutY="2.0" prefHeight="25.0" prefWidth="56.0"/>
+   <Spinner fx:id="callbackTimeMin" editable="true" layoutX="350.0" layoutY="2.0" prefHeight="25.0" prefWidth="56.0"/>
+   <ToggleButton fx:id="callbackMeridianBtn" layoutX="409.0" layoutY="2.0" mnemonicParsing="false"
+                 onAction="#toggleCallbackMeridiem" text="AM"/>
+   <Button fx:id="copyFollowUp" layoutX="11.0" layoutY="287.0" mnemonicParsing="false" onAction="#copyResultToClipboard"
+           text="Copy to Clipboard"/>
+   <Button fx:id="discardExpBtn" layoutX="335.0" layoutY="287.0" mnemonicParsing="false" onAction="#sendCloseAction"
+           text="Discard Exception"/>
+   <Label layoutX="9.0" layoutY="36.0" text="Left off at:"/>
+   <TextField fx:id="caseField" alignment="CENTER" layoutX="360.0" layoutY="32.0" prefHeight="25.0" prefWidth="84.0"
+              promptText="IN-####"/>
+   <TextField fx:id="callbackLeftOffAtField" layoutX="67.0" layoutY="32.0" prefHeight="25.0" prefWidth="280.0"
+              promptText="Where about in the case did you stop?"/>
+   <Button fx:id="emailCallbackBtn" layoutX="176.0" layoutY="287.0" mnemonicParsing="false"
+           onAction="#sendScheduledCallbackToSpokan" text="Email Callback"/>
+   <TextArea fx:id="rebuttalReasonTwo" layoutX="233.0" layoutY="166.0" prefHeight="72.0" prefWidth="220.0"
+             promptText="Please provide your Rebuttal used here"/>
+   <TextField fx:id="rebuttalOneTimeframeField" layoutX="2.0" layoutY="247.0" prefHeight="25.0" prefWidth="220.0"
+              promptText="Time within the call of rebuttal"/>
+   <TextField fx:id="rebuttalTimeframeTwoField" layoutX="233.0" layoutY="247.0" prefHeight="25.0" prefWidth="220.0"
+              promptText="Time within the call of rebuttal"/>
+   <Label layoutX="77.0" layoutY="143.0" text="First Rebuttal"/>
+   <Label layoutX="295.0" layoutY="143.0" text="Second Rebuttal"/>
+   <Label layoutX="9.0" layoutY="79.0" text="Reason:"/>
+   <TextArea fx:id="callbackDetailedReasonArea" layoutX="66.0" layoutY="66.0" prefHeight="42.0" prefWidth="378.0"
+             promptText="Please leave a detailed reason for this callback"/>
+   <Label layoutX="9.0" layoutY="121.0" text="Customers Timezone:"/>
+</AnchorPane>

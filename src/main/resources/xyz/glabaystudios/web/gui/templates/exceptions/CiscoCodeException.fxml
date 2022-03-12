@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane prefHeight="310.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="xyz.glabaystudios.web.gui.templates.exceptions.CiscoCodeExceptionWindows">
+   <Label layoutX="24.0" layoutY="6.0" text="Exception Date:"/>
+   <TextArea fx:id="exceptionExplanation" layoutX="1.0" layoutY="166.0" prefHeight="100.0" prefWidth="298.0"
+             promptText="Reason for the Exception"/>
+   <TextField fx:id="exceptionDateField" alignment="CENTER" layoutX="125.0" layoutY="2.0" prefHeight="25.0"
+              prefWidth="156.0" promptText="March 3, 2022"/>
+   <Label layoutX="92.0" layoutY="41.0" text="Start:"/>
+   <Spinner fx:id="exceptionTimeStartHr" editable="true" layoutX="126.0" layoutY="37.0" prefHeight="25.0"
+            prefWidth="56.0"/>
+   <Spinner fx:id="exceptionTimeStartMin" editable="true" layoutX="187.0" layoutY="37.0" prefHeight="25.0"
+            prefWidth="56.0"/>
+   <ToggleButton fx:id="exceptionTimeStartAmPm" layoutX="246.0" layoutY="37.0" mnemonicParsing="false"
+                 onAction="#toggleAmPmBtn" text="AM"/>
+   <Spinner fx:id="exceptionTimeFinishedHr" editable="true" layoutX="126.0" layoutY="70.0" prefHeight="25.0"
+            prefWidth="56.0"/>
+   <Spinner fx:id="exceptionTimeFinishedMin" editable="true" layoutX="187.0" layoutY="70.0" prefHeight="25.0"
+            prefWidth="56.0"/>
+   <ToggleButton fx:id="exceptionTimeFinishedAmPm" layoutX="246.0" layoutY="70.0" mnemonicParsing="false"
+                 onAction="#toggleAmPmBtn" text="AM"/>
+   <TextField fx:id="exceptionApprovedBy" alignment="CENTER" layoutX="64.0" layoutY="134.0" prefHeight="25.0"
+              prefWidth="170.0" promptText="Approved by (if applicable)"/>
+   <Button fx:id="sendExpBtn" layoutX="11.0" layoutY="271.0" mnemonicParsing="false" onAction="#sendExceptionEmail"
+           text="Send Exception"/>
+   <Button fx:id="discardExpBtn" layoutX="181.0" layoutY="271.0" mnemonicParsing="false" onAction="#sendCloseAction"
+           text="Discard Exception"/>
+   <Label layoutX="24.0" layoutY="105.0" text="Exception Type:"/>
+   <ComboBox fx:id="exceptionType" layoutX="126.0" layoutY="100.0" prefWidth="155.0"/>
+   <Label layoutX="88.0" layoutY="74.0" text="Finish:"/>
+   <Label layoutX="15.0" layoutY="47.0" text="Exception"/>
+   <Label layoutX="12.0" layoutY="64.0" text="Timeframe"/>
+</AnchorPane>

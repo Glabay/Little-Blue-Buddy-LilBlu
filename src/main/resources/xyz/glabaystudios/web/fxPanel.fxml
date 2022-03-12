@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="360.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.FxPanel">
+  <TextArea layoutY="30.0" prefHeight="330.0" prefWidth="470.0" wrapText="true"/>
+  <Pane layoutX="470.0" prefHeight="360.0" prefWidth="270.0">
+    <TextField fx:id="domainField" alignment="TOP_CENTER" layoutX="6.0" layoutY="5.0" prefWidth="200.0"
+               promptText="domain here"/>
+    <Label fx:id="domainLabel" alignment="CENTER" layoutY="35.0" prefHeight="24.0" prefWidth="270.0"
+           text="DOMAIN NAME HERE" textAlignment="CENTER">
+      <font>
+        <Font size="14.0" fx:id="x1"/>
+      </font>
+    </Label>
+    <Label fx:id="familyLabel" alignment="CENTER" font="$x1" layoutY="58.0" prefHeight="24.0"
+           prefWidth="270.0" text="IN-FAMILY OR NOT" textAlignment="CENTER"/>
+    <Label fx:id="mxLabel" alignment="CENTER" font="$x1" layoutY="84.0" prefHeight="24.0"
+           prefWidth="270.0" text="Has ## Mail Server(s)" textAlignment="CENTER"/>
+    <ListView fx:id="socialMediaListView" layoutY="168.0"
+              onMouseReleased="#executeMouseActionOnSocialLink" prefHeight="96.0" prefWidth="270.0">
+      <tooltip>
+        <Tooltip text="Left-Click to Copy link, Right-Click to open the link"/>
+      </tooltip>
+    </ListView>
+    <Label fx:id="domainNameServerLabel" alignment="CENTER" font="$x1" layoutY="108.0" prefHeight="24.0"
+           prefWidth="270.0" text="Name Servers here" textAlignment="CENTER"/>
+    <Button id="resetLookUpBtn" fx:id="resetLookupBtn" layoutX="87.0" layoutY="329.0" mnemonicParsing="false"
+            onAction="#resetEverything" text="Reset lookup"/>
+    <Button fx:id="inboundBtn" layoutX="18.0" layoutY="296.0" mnemonicParsing="false" onAction="#setCallInbound"
+            text="INBOUND CALL"/>
+    <Button fx:id="outboundBtn" layoutX="132.0" layoutY="296.0" mnemonicParsing="false" onAction="#setCallOutbound"
+            text="OUTBOUND CALL"/>
+    <Label fx:id="callTypeLabel" alignment="CENTER" font="$x1" layoutX="6.0" layoutY="266.0" prefHeight="23.9609375"
+           prefWidth="249.0001220703125" text="WAS THIS AN INBOUND CALL?" textAlignment="CENTER"/>
+    <Button fx:id="lookupBtn" layoutX="210.0" layoutY="5.0" mnemonicParsing="false" onAction="#executeWhoisLookup"
+            text="lookup"/>
+    <Label id="domainNameServerLabel" alignment="CENTER" font="$x1" layoutY="136.0"
+           prefHeight="23.9609375" prefWidth="270.0" text="Social Media Presence" textAlignment="CENTER"/>
+  </Pane>
+  <MenuBar prefHeight="32.0" prefWidth="470.0">
+    <Menu mnemonicParsing="false" text="File">
+      <MenuItem fx:id="menuOptClose" mnemonicParsing="false" onAction="#requestCloseAction" text="Close"/>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Templates">
+      <MenuItem fx:id="menuOptTempExe" mnemonicParsing="false" onAction="#requestTemplateWindowException"
+                text="Exception"/>
+      <MenuItem fx:id="menuOptTempFoloUp" mnemonicParsing="false" onAction="#requestTemplateWindowFollowUp"
+                text="Follow-up"/>
+      <MenuItem fx:id="menuOptTempLateEvent" mnemonicParsing="false" onAction="#requestTemplateWindowMissedEvent"
+                text="Late/Missed Event"/>
+      <MenuItem fx:id="menuOptTempSchedCallback" mnemonicParsing="false"
+                onAction="#requestTemplateWindowScheduleCallback" text="Schedule a Callback"/>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Tools">
+      <MenuItem fx:id="menuOptToolDocuNamer" mnemonicParsing="false" onAction="#loadDocumentRenamer"
+                text="Document Renaming"/>
+      <MenuItem fx:id="menuOptToolDocuHound" mnemonicParsing="false" onAction="#prepTheHounds"
+                text="Docu-Hound"/>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Help">
+      <MenuItem fx:id="menuOptAbout" mnemonicParsing="false" onAction="#requestAboutWindow" text="About"/>
+    </Menu>
+  </MenuBar>
+</AnchorPane>

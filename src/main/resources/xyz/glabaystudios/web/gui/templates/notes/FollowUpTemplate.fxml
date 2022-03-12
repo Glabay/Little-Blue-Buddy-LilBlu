@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane prefHeight="228.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="xyz.glabaystudios.web.gui.templates.notes.FollowUpWindow">
+   <Label layoutX="24.0" layoutY="6.0" text="Follow-up Date:"/>
+   <TextArea fx:id="followUpNotes" layoutX="1.0" layoutY="100.0" prefHeight="90.0" prefWidth="298.0"
+             promptText="Outbound Call, No answer, Left voicemail"/>
+   <TextField fx:id="exceptionDateField" alignment="CENTER" layoutX="125.0" layoutY="2.0" prefHeight="25.0"
+              prefWidth="156.0" promptText="March 3, 2022"/>
+   <Label layoutX="14.0" layoutY="41.0" text="Time of Follow-up:"/>
+   <Spinner fx:id="exceptionTimeStartHr" editable="true" layoutX="126.0" layoutY="37.0" prefHeight="25.0"
+            prefWidth="56.0"/>
+   <Spinner fx:id="exceptionTimeStartMin" editable="true" layoutX="187.0" layoutY="37.0" prefHeight="25.0"
+            prefWidth="56.0"/>
+   <ToggleButton fx:id="exceptionTimeStartAmPm" layoutX="246.0" layoutY="37.0" mnemonicParsing="false"
+                 onAction="#toggleAmPmBtn" text="AM"/>
+   <Button fx:id="copyFollowUp" layoutX="11.0" layoutY="199.0" mnemonicParsing="false" onAction="#copyResultToClipboard"
+           text="Copy to Clipboard"/>
+   <Button fx:id="discardExpBtn" layoutX="181.0" layoutY="199.0" mnemonicParsing="false" onAction="#sendCloseAction"
+           text="Discard Exception"/>
+   <Label layoutX="8.0" layoutY="75.0" text="Day:"/>
+   <Spinner fx:id="followUpDay" editable="true" layoutX="36.0" layoutY="71.0" prefHeight="25.0" prefWidth="56.0"/>
+   <Spinner fx:id="followUpAttempt" editable="true" layoutX="145.0" layoutY="71.0" prefHeight="25.0" prefWidth="56.0"/>
+   <Label layoutX="96.0" layoutY="75.0" text="Attempt:"/>
+   <TextField fx:id="caseField" alignment="CENTER" layoutX="209.0" layoutY="71.0" prefHeight="25.0" prefWidth="84.0"
+              promptText="IN-####"/>
+</AnchorPane>

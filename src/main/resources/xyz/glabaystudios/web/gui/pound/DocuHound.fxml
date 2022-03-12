@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="360.0" prefWidth="240.0" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.pound.DocuHoundWindow">
+   <Label alignment="CENTER" layoutY="35.0" prefHeight="25.0" prefWidth="272.0" text="Which Documents"
+          AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          AnchorPane.topAnchor="35.0">
+      <font>
+         <Font size="16.0"/>
+      </font>
+   </Label>
+   <Button fx:id="relTheHndBtn" layoutX="59.0" layoutY="113.0" mnemonicParsing="false"
+           onAction="#prepareThePackForTheHunt" text="Release the hounds!"/>
+   <Button fx:id="discardExpBtn" layoutX="173.0" layoutY="329.0" mnemonicParsing="false" onAction="#sendCloseAction"
+           text="Discard"/>
+   <CheckBox fx:id="docxChk" layoutX="12.0" layoutY="60.0" mnemonicParsing="false" text="Word File"/>
+   <CheckBox fx:id="pdfChk" layoutX="147.0" layoutY="60.0" mnemonicParsing="false" text="PDF File"/>
+   <CheckBox fx:id="pptChk" layoutX="147.0" layoutY="85.0" mnemonicParsing="false" text="PowerPoint"/>
+   <CheckBox fx:id="videoChk" layoutX="12.0" layoutY="86.0" mnemonicParsing="false" text="Video Links"/>
+   <Button fx:id="saveDocsBtn" disable="true" layoutX="11.0" layoutY="329.0" mnemonicParsing="false"
+           onAction="#saveDocuments" text="Save Documents"/>
+   <ListView fx:id="foundDocumentList" layoutY="173.0" prefHeight="146.0" prefWidth="240.0"/>
+   <Label fx:id="packStatusLabel" alignment="CENTER" layoutY="150.0" prefHeight="17.0" prefWidth="277.0"
+          text="The pack is sleeping..." textAlignment="CENTER" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0"/>
+   <TextField fx:id="domainField" alignment="TOP_CENTER" layoutX="14.0" layoutY="9.0" prefHeight="25.0"
+              prefWidth="213.0" promptText="example.com"/>
+</AnchorPane>
