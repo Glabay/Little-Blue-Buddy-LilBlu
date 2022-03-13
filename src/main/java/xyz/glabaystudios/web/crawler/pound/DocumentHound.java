@@ -89,9 +89,9 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 	}
 
 	public HashMap<String, String> getFoundDocuments() {
-		System.out.println(getName() + " is Sniffing...");
 		getPageContent();
 		if (page == null) return null;
+//		System.out.println(getName() + " is Sniffing...");
 		Elements links = page.getElementsByAttribute("href");
 		for (Element link : links) {
 			String href = link.attr("href");

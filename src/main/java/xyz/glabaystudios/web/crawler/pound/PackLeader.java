@@ -6,6 +6,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 
+import javax.net.ssl.SSLException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,6 +29,8 @@ public class PackLeader extends DocumentHound {
 	List<String> pagesToSniff;
 	List<String> additionalMaps;
 
+	private boolean sitemapFound = false;
+
 	ExecutorService executorService = Executors.newCachedThreadPool();
 
 	HashMap<String, String> finalCopyOfLinks = new HashMap<>();
@@ -48,6 +51,10 @@ public class PackLeader extends DocumentHound {
 			bufferedReader.close();
 		} catch (MalformedURLException e) {
 			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> MalformedURL", e);
+		} catch (SSLException e) {
+			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> SSLException\nChecking again without SSL", e);
+			connectAndFetchSitemap(domainsSitemap.replace("https://", "http://"));
+			return;
 		} catch (IOException e) {
 			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> InputOutput", e);
 		}
@@ -55,7 +62,7 @@ public class PackLeader extends DocumentHound {
 	}
 
 	private void applySubSitemapCheck(String sitemap) {
-		System.out.println("Looking for the additional sitemaps");
+		System.out.println("Looking for the additional sitemaps...");
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -63,25 +70,33 @@ public class PackLeader extends DocumentHound {
 			InputSource pageSource = new InputSource();
 			pageSource.setCharacterStream(new StringReader(sitemap));
 
-			Document doc = db.parse(pageSource);
-			NodeList nodes = doc.getElementsByTagName("sitemap");
-			if (nodes != null && nodes.getLength() > 0) {
+			try {
+				Document doc = db.parse(pageSource);
+				NodeList nodes = doc.getElementsByTagName("sitemap");
+				if (nodes != null && nodes.getLength() > 0) {
+				System.out.println("Found additional sitemap...");
 				additionalMaps = new ArrayList<>();
 				for (int i = 0; i < nodes.getLength(); i++) {
 					Element element = (Element) nodes.item(i);
 					NodeList name = element.getElementsByTagName("loc");
 					Element line = (Element) name.item(0);
 					String pageLink = getCharacterDataFromElement(line);
-				    additionalMaps.add(pageLink);
+					System.out.println("adding additional sitemap to be indexed after this one...");
+					additionalMaps.add(pageLink);
 				}
 				additionalMaps.forEach(this::connectAndFetchSitemap);
-			} else openConnectionAndReadSitemap(sitemap);
-		} catch (SAXException e) {
-			NetworkExceptionHandler.handleException("openConnectionAndReadSitemap -> SAX", e);
+			} else {
+				System.out.println("Just the single sitemap, moving on...");
+				openConnectionAndReadSitemap(sitemap);
+			}
+			} catch (SAXException e) {
+				NetworkExceptionHandler.handleException("applySubSitemapCheck -> SAX ", e);
+				sitemapFound = false;
+			} catch (IOException e) {
+				NetworkExceptionHandler.handleException("applySubSitemapCheck -> InputOutput ", e);
+			}
 		} catch (ParserConfigurationException e) {
-			NetworkExceptionHandler.handleException("openConnectionAndReadSitemap -> ParserConfiguration", e);
-		} catch (IOException e) {
-			NetworkExceptionHandler.handleException("openConnectionAndReadSitemap -> InputOutput", e);
+			NetworkExceptionHandler.handleException("applySubSitemapCheck -> ParserConfiguration ", e);
 		}
 	}
 
@@ -140,12 +155,10 @@ public class PackLeader extends DocumentHound {
 
 	private void assignHounds() {
 		for(String link : pagesToSniff) {
-//			System.out.println("assigning pages");
 			String pageName = link.substring(domainHome.length());
 			DocumentHound docuHoundPack = new DocumentHound(domainHome);
 			docuHoundPack.setTarget(link);
 			docuHoundPack.setTargetDocuments(searchingForDocx, searchingForPdf, searchingForVideos, searchingForPpt);
-//			System.out.println("Hound assigned: " + pageName);
 			docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound-" + pageName);
 			pack.add(docuHoundPack);
 		}
@@ -158,19 +171,18 @@ public class PackLeader extends DocumentHound {
 		pack = new ArrayList<>(pagesToSniff.size());
 
 		assignHounds();
-		System.out.println("Pack is ready to run!\nRelease the Hounds!");
+
+		System.out.println("Pack is assigned pages.");
 		releaseThePack(pack.stream().<Callable<HashMap<String, String>>>map(hound -> hound::getFoundDocuments).collect(Collectors.toList()));
-		System.out.println("Successful hunt!");
 		return finalCopyOfLinks;
 	}
 
 	private void releaseThePack(Collection<Callable<HashMap<String, String>>> callables) {
+		System.out.printf("Preparing the pack of: %s%nReleasing the Hounds!%n", callables.size());
 		while (!executorService.isShutdown()) {
 			try {
 				List<Future<HashMap<String, String>>> taskFutureList = executorService.invokeAll(callables);
-				System.out.println("Preparing the pack of: " + taskFutureList.size());
 				for (Future<HashMap<String, String>> future : taskFutureList) {
-					/* get Double result from Future when it becomes available */
 					HashMap<String, String> value = future.get(30, TimeUnit.SECONDS);
 					if (value != null) finalCopyOfLinks.putAll(value);
 				}
@@ -182,6 +194,7 @@ public class PackLeader extends DocumentHound {
 				NetworkExceptionHandler.handleException("getFoundDocuments -> InputOutput", e);
 			} finally {
 				executorService.shutdown();
+				if (finalCopyOfLinks.size() > 0) System.out.println("Successful hunt!");
 			}
 		}
 	}
@@ -193,5 +206,9 @@ public class PackLeader extends DocumentHound {
 			return cd.getData();
 		}
 		return "?";
+	}
+
+	public List<DocumentHound> getPack() {
+		return pack;
 	}
 }

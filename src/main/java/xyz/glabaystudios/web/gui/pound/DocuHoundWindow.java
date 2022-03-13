@@ -81,23 +81,29 @@ public class DocuHoundWindow {
 		Future<HashMap<String, String>> docuHoundLeader = executorService.submit(docuHoundPack::getFoundDocuments);
 //		relTheHndBtn.setDisable(true);
 		packStatusLabel.setText("The pack is out hunting for documents...");
+		System.out.println("Checking in on the pack");
 		while(!executorService.isShutdown()) {
 			try {
-				foundDocuments = docuHoundLeader.get(60, TimeUnit.SECONDS);
-			} catch (InterruptedException | ExecutionException | TimeoutException e) {
-				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> " + e.getCause(), e);
+				foundDocuments = docuHoundLeader.get(90, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Interrupted " + e.getCause(), e);
+			} catch (ExecutionException e) {
+				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Execution " + e.getCause(), e);
+			} catch (TimeoutException e) {
+
+				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Timeout " + e.getCause(), e);
 			} finally {
-				updateFoundList();
 				executorService.shutdown();
 			}
 		}
+		updateFoundList();
 	}
 
 	private void updateFoundList() {
 		packStatusLabel.setText("Pack is returning...");
 		System.out.println("Done!");
 		foundDocumentList.getItems().clear();
-		System.out.println("Collected: " + foundDocuments.size() + " documents from");
+		System.out.println("Collected: " + foundDocuments.size() + " documents");
 		int index = 0;
 		for (String link : foundDocuments.keySet()) foundDocumentList.getItems().add(index++, foundDocuments.get(link) + " | " + link);
 		packStatusLabel.setText("Found " + foundDocuments.size() + " documents!");
