@@ -1,9 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="xyz.glabaystudios.web.gui.AboutPanel"
-            prefHeight="400.0" prefWidth="600.0">
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="410.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="xyz.glabaystudios.web.gui.AboutPanel">
+    <Label layoutX="25.0" layoutY="196.0" text="¤ Base Language">
+        <font>
+            <Font size="13.0"/>
+        </font>
+    </Label>
+    <Label layoutX="25.0" layoutY="85.0" text="Written by Mike Glabay of Glabay-Studios">
+        <font>
+            <Font size="18.0"/>
+        </font>
+    </Label>
+    <Label layoutX="98.0" layoutY="9.0" text="Little Blue Buddy">
+        <font>
+            <Font size="24.0"/>
+        </font>
+    </Label>
+    <Label layoutX="163.0" layoutY="38.0" text="(LilBlu)">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="141.0" layoutY="127.0" text="Written with:">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="32.0" layoutY="164.0" text="Java 11 (LTS)">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="152.0" layoutY="164.0" text="JavaFX 15">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="141.0" layoutY="196.0" text="¤ User Interface">
+        <font>
+            <Font size="13.0"/>
+        </font>
+    </Label>
+    <Label layoutX="257.0" layoutY="196.0" text="¤ Web Scraping">
+        <font>
+            <Font size="13.0"/>
+        </font>
+    </Label>
+    <Label layoutX="264.0" layoutY="164.0" text="Jsoup 1.14">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="31.0" layoutY="276.0" text="¤ Email Service">
+        <font>
+            <Font size="13.0"/>
+        </font>
+    </Label>
+    <Label layoutX="24.0" layoutY="244.0" text="JavaEE Mail 1.6">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="161.0" layoutY="244.0" text="Apache">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="141.0" layoutY="276.0" text="¤ Commons-net">
+        <font>
+            <Font size="13.0"/>
+        </font>
+    </Label>
+    <Label layoutX="257.0" layoutY="276.0" text="¤ Annotations">
+        <font>
+            <Font size="13.0"/>
+        </font>
+    </Label>
+    <Label layoutX="258.0" layoutY="244.0" text="lombok 1.18">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+    <Label layoutX="155.0" layoutY="295.0" text="¤ Validator">
+        <font>
+            <Font size="13.0"/>
+        </font>
+    </Label>
+    <Label layoutX="1.0" layoutY="394.0" text="Build-Date: mar-03-2022">
+        <font>
+            <Font size="10.0"/>
+        </font>
+    </Label>
+    <Label layoutX="1.0" layoutY="380.0" text="Version: 0.8_2">
+        <font>
+            <Font size="10.0"/>
+        </font>
+    </Label>
+   <ImageView fitHeight="72.0" fitWidth="63.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@../lilblu.png"/>
+   </ImageView>
+   <ImageView fitHeight="72.0" fitWidth="63.0" layoutX="298.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@../lilblu.png"/>
+   </ImageView>
+   <ImageView fx:id="linkedInIcon" fitHeight="32.0" fitWidth="32.0" layoutX="348.0" layoutY="378.0"
+              onMouseClicked="#openLinkedIn" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-linkedin.png"/>
+   </ImageView>
+   <ImageView fx:id="facebookIcon" fitHeight="32.0" fitWidth="32.0" layoutX="316.0" layoutY="378.0"
+              onMouseClicked="#openFacebook" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-facebook.png"/>
+   </ImageView>
+   <ImageView fx:id="discordIcon" fitHeight="32.0" fitWidth="32.0" layoutX="284.0" layoutY="378.0"
+              onMouseClicked="#openDiscord" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-discord.png"/>
+   </ImageView>
+   <ImageView fx:id="gitHubIcon" fitHeight="32.0" fitWidth="32.0" layoutX="252.0" layoutY="378.0"
+              onMouseClicked="#openGitHub" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-github.png"/>
+   </ImageView>
 </AnchorPane>

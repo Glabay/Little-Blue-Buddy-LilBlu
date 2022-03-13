@@ -3,6 +3,7 @@ package xyz.glabaystudios.web;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
+import xyz.glabaystudios.web.gui.AboutPanel;
 import xyz.glabaystudios.web.gui.DocumentRenamer;
 import xyz.glabaystudios.web.gui.pound.DocuHoundWindow;
 import xyz.glabaystudios.web.gui.templates.emails.CallbackWindow;
@@ -22,6 +23,18 @@ public class Controllers {
 	private static Parent followUpWindow;
 	private static Parent missedEventWindow;
 	private static Parent callbackWindow;
+	private static Parent aboutGlabayStudiosWindow;
+
+	public static Parent getAboutGlabayStudiosWindow() {
+		if (aboutGlabayStudiosWindow == null) {
+			try {
+				aboutGlabayStudiosWindow = FXMLLoader.load(Objects.requireNonNull(AboutPanel.class.getResource("AboutPanel.fxml")));
+			} catch (IOException e) {
+				NetworkExceptionHandler.handleException("getAboutGlabayStudiosWindow", e);
+			}
+		}
+		return aboutGlabayStudiosWindow;
+	}
 
 	public static Parent getCallbackWindow() {
 		if (callbackWindow == null) {
@@ -124,5 +137,9 @@ public class Controllers {
 
 	public static void removeCallbackWindow() {
 		callbackWindow = null;
+	}
+
+	public static void removeAboutGlabayStudiosWindow() {
+		aboutGlabayStudiosWindow = null;
 	}
 }
