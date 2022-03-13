@@ -237,22 +237,7 @@ public class FxPanel {
 	}
 
 	public void requestAboutWindow() {
-		Scene popup = null;
-		try {
-			popup = new Scene(Controllers.getAboutGlabayStudiosWindow());
-		} catch (IllegalArgumentException e) {
-			NetworkExceptionHandler.handleException("Trying to open a second window: requestAboutWindow", e);
-		}
-		if (popup != null) {
-			Stage aboutWindow = new Stage();
-			aboutWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-			aboutWindow.setResizable(false);
-			aboutWindow.setTitle("About - Little Blue Buddy");
-			aboutWindow.setScene(popup);
-			aboutWindow.setOnCloseRequest(windowEvent -> Controllers.removeAboutGlabayStudiosWindow());
-			aboutWindow.show();
-			aboutWindow.setOnShown(event -> aboutWindow.requestFocus());
-		}
+		LilBlu.openAbout();
 	}
 
 	public void executeMouseActionOnSocialLink(MouseEvent mouseEvent) {

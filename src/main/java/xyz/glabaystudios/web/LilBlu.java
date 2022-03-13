@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.Getter;
+import xyz.glabaystudios.net.NetworkExceptionHandler;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -25,11 +26,12 @@ public class LilBlu extends Application {
 			e.printStackTrace();
 		}
 
+		Image lilBluIcon = new Image(String.valueOf(getClass().getResource("lilblu.png")));
 
 		Scene scene = new Scene(Controllers.getMainWindow());
 		mainWindow.setResizable(false);
 		mainWindow.setAlwaysOnTop(true);
-		mainWindow.getIcons().add(new Image(String.valueOf(getClass().getResource("lilblu.png"))));
+		mainWindow.getIcons().add(lilBluIcon);
 		mainWindow.setTitle("Little Blue Buddy");
 		mainWindow.setScene(scene);
 		mainWindow.setOnHidden(windowEvent -> {
@@ -41,6 +43,25 @@ public class LilBlu extends Application {
 			if (mainWinY > 0) mainWindow.setY(mainWinY);
 		});
 		mainWindow.show();
+	}
+
+	public static void openAbout() {
+		Scene about = null;
+		try {
+			about = new Scene(Controllers.getAboutGlabayStudiosWindow());
+		} catch (IllegalArgumentException e) {
+			NetworkExceptionHandler.handleException("Trying to open a second window: requestAboutWindow", e);
+		}
+		if (about != null) {
+			Stage aboutWindow = new Stage();
+			aboutWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
+			aboutWindow.setResizable(false);
+			aboutWindow.setTitle("About - Little Blue Buddy");
+			aboutWindow.setScene(about);
+			aboutWindow.setOnCloseRequest(windowEvent -> Controllers.removeAboutGlabayStudiosWindow());
+			aboutWindow.show();
+			aboutWindow.toFront();
+		}
 	}
 
 	public static void main(String... args) {

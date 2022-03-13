@@ -1,19 +1,32 @@
 package xyz.glabaystudios.web.gui;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
+import xyz.glabaystudios.web.LilBlu;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class AboutPanel {
+public class AboutPanel implements Initializable {
 
 	@FXML public ImageView linkedInIcon;
 	@FXML public ImageView facebookIcon;
 	@FXML public ImageView discordIcon;
 	@FXML public ImageView gitHubIcon;
+	@FXML public Label buildDate;
+	@FXML public Label versionLabel;
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		buildDate.setText(String.format(buildDate.getText(), LilBlu.getProperties().getProperty("lilblu.build.date")));
+		versionLabel.setText(String.format(versionLabel.getText(), LilBlu.getProperties().getProperty("lilblu.build.version")));
+	}
 
 	public void openLink(String link) {
 		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;

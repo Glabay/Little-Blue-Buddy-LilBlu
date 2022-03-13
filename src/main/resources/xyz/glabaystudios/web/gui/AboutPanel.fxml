@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane prefHeight="410.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane prefHeight="410.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="xyz.glabaystudios.web.gui.AboutPanel">
     <Label layoutX="25.0" layoutY="196.0" text="¤ Base Language">
         <font>
@@ -92,12 +92,12 @@
             <Font size="13.0"/>
         </font>
     </Label>
-    <Label layoutX="1.0" layoutY="394.0" text="Build-Date: mar-03-2022">
+    <Label fx:id="buildDate" layoutX="1.0" layoutY="394.0" text="Build-Date: %s">
         <font>
             <Font size="10.0"/>
         </font>
     </Label>
-    <Label layoutX="1.0" layoutY="380.0" text="Version: 0.8_2">
+    <Label fx:id="versionLabel" layoutX="1.0" layoutY="380.0" text="Version: %s">
         <font>
             <Font size="10.0"/>
         </font>
