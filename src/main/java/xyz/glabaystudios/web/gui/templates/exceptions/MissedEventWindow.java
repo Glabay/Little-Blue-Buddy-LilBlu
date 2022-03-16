@@ -84,7 +84,7 @@ public class MissedEventWindow implements Initializable {
 		emailTemplate.setReason(notesArea.getText());
 
 		new ExceptionEmail(emailTemplate.getEvent())
-				.setRecipients(Recipients.DEVELOPMENT)
+				.setRecipients(Recipients.E_TIME)
 				.setEmailMessage(emailTemplate.toString())
 				.sendException();
 		sendCloseAction();
