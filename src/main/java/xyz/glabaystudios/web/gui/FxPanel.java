@@ -175,7 +175,7 @@ public class FxPanel {
 			ciscoCodeException.setScene(popup);
 			ciscoCodeException.setOnCloseRequest(windowEvent -> Controllers.removeCiscoCodeExceptionWindow());
 			ciscoCodeException.show();
-			ciscoCodeException.requestFocus();
+			ciscoCodeException.setOnShown(windowEvent -> ciscoCodeException.toFront());
 		} // else we already have an exception open and in progress.
 	}
 
@@ -194,7 +194,7 @@ public class FxPanel {
 			followUp.setScene(popup);
 			followUp.setOnCloseRequest(windowEvent -> Controllers.removeFollowUpWindow());
 			followUp.show();
-			followUp.requestFocus();
+			followUp.setOnShown(windowEvent -> followUp.toFront());
 		}
 	}
 
@@ -213,7 +213,7 @@ public class FxPanel {
 			eventWindow.setScene(popup);
 			eventWindow.setOnCloseRequest(windowEvent -> Controllers.removeMissedEventWindow());
 			eventWindow.show();
-			eventWindow.setOnShown(event -> eventWindow.requestFocus());
+			eventWindow.setOnShown(event -> eventWindow.toFront());
 		}
 	}
 
@@ -232,7 +232,7 @@ public class FxPanel {
 			eventWindow.setScene(popup);
 			eventWindow.setOnCloseRequest(windowEvent -> Controllers.removeCallbackWindow());
 			eventWindow.show();
-			eventWindow.setOnShown(event -> eventWindow.requestFocus());
+			eventWindow.setOnShown(event -> eventWindow.toFront());
 		}
 	}
 

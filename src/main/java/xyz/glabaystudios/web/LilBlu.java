@@ -60,7 +60,10 @@ public class LilBlu extends Application {
 			aboutWindow.setScene(about);
 			aboutWindow.setOnCloseRequest(windowEvent -> Controllers.removeAboutGlabayStudiosWindow());
 			aboutWindow.show();
-			aboutWindow.toFront();
+			aboutWindow.setOnShown(windowEvent -> {
+				aboutWindow.toFront();
+				((Stage) Controllers.getMainWindow().getScene().getWindow()).toBack();
+			});
 		}
 	}
 

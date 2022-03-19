@@ -22,7 +22,7 @@ public class NetworkExceptionHandler {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			String errorJson = mapper.writeValueAsString(thrownException.getCause());
-			prepareHttpRequest(errorJson);
+//			prepareHttpRequest(errorJson);
 		} catch (JsonProcessingException ignored) {}
 		System.out.println(errorDesc);
 	}
