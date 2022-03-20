@@ -2,6 +2,7 @@ package xyz.glabaystudios.util;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import xyz.glabaystudios.net.NetworkExceptionHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,11 +38,11 @@ public class TimeZoneWrapper {
 				countries.put(codeAndName[0], codeAndName[1]);
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("loadTimeZoneCsv -> FileNotFound", e);
 		} catch (CsvValidationException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("loadTimeZoneCsv -> CsvValidation", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("loadTimeZoneCsv -> InputOutput", e);
 		}
 		return countries;
 	}
@@ -63,11 +64,11 @@ public class TimeZoneWrapper {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("loadTimeZoneList -> FileNotFound", e);
 		} catch (CsvValidationException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("loadTimeZoneList -> CsvValidation", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("loadTimeZoneList -> InputOutput", e);
 		}
 		return timeZonePhoneBook;
 	}
