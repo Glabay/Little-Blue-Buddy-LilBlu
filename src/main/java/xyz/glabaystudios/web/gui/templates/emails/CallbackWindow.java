@@ -65,7 +65,7 @@ public class CallbackWindow implements Initializable {
 	public ObservableList<String> getTimeZoneList(String countryCode) {
 		List<String> timezones = new ArrayList<>();
 		timezones.add("Select Customers Timezone");
-		timezones.addAll(TimeZoneWrapper.getTimeZonePhoneBook(countryCode));
+		timezones.addAll(TimeZoneWrapper.getWrapper().getTimeZonePhoneBook(countryCode));
 		return FXCollections.observableArrayList(timezones);
 	}
 
