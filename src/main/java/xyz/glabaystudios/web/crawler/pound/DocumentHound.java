@@ -18,6 +18,7 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 	String name;
 
 	final String domainHome;
+
 	String domainPage;
 	Document page;
 	final String userAgent = "Mozilla/5.0 (Windows NT 6.1; rv:80.0) Gecko/27132701 Firefox/78.7";
@@ -72,13 +73,13 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 	}
 
 	public void run() {
-		sniffForLinks();
+		crawlThePageForContent();
 	}
 
 	protected String[] documentType   = { ".doc",      ".docm",     ".docx"   };
 	protected String[] powerPointType = { ".potx",     ".ppt",     ".pptx"   };
 
-	public void sniffForLinks() {
+	public void crawlThePageForContent() {
 		System.out.println(getName() + " is Sniffing...");
 		if (page == null) return;
 		Elements links = page.getElementsByAttribute("href");

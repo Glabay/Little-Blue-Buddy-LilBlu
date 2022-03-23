@@ -125,6 +125,8 @@ public class DocuHoundWindow {
 
 	public void saveDocuments() {
 		System.out.println("Time to Save the Documents...");
+		saveDocsBtn.setDisable(true);
+		new Alert(AlertType.INFORMATION, "Downloading documents...\n\nYou can close this popup").show();
 		Downloader docuDownloader;
 		int split = 16;
 		int houndsNeeded = foundDocuments.size() / split;
@@ -156,5 +158,8 @@ public class DocuHoundWindow {
 			docuDownloader.passDocumentList((HashMap<String, String>) foundDocuments);
 			docuDownloader.start();
 		}
+		String localPath = System.getProperty("user.home") + "/Downloads/" + getFormattedDomain(domainField.getText()).replace("http://", "").replace(".", "-");
+		new Alert(AlertType.INFORMATION, "Done, downloaded.\n\n" + localPath).show();
+
 	}
 }

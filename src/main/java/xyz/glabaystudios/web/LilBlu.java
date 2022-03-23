@@ -56,14 +56,12 @@ public class LilBlu extends Application {
 			Stage aboutWindow = new Stage();
 			aboutWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
 			aboutWindow.setResizable(false);
+			aboutWindow.setAlwaysOnTop(true);
 			aboutWindow.setTitle("About - Little Blue Buddy");
 			aboutWindow.setScene(about);
 			aboutWindow.setOnCloseRequest(windowEvent -> Controllers.removeAboutGlabayStudiosWindow());
 			aboutWindow.show();
-			aboutWindow.setOnShown(windowEvent -> {
-				aboutWindow.toFront();
-				((Stage) Controllers.getMainWindow().getScene().getWindow()).toBack();
-			});
+			aboutWindow.setOnShown(windowEvent -> aboutWindow.toFront());
 		}
 	}
 
