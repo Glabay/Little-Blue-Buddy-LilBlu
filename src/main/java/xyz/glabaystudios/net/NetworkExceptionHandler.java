@@ -2,6 +2,7 @@ package xyz.glabaystudios.net;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,11 +21,13 @@ public class NetworkExceptionHandler {
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.writerWithDefaultPrettyPrinter();
 		try {
-			String errorJson = mapper.writeValueAsString(thrownException.getCause());
+			String errorJson = mapper.writeValueAsString(thrownException);
+			System.out.println(errorJson);
 //			prepareHttpRequest(errorJson);
 		} catch (JsonProcessingException ignored) {}
-		System.out.println(errorDesc);
 	}
 
 	private static final HttpClient httpClient = HttpClient.newBuilder()
