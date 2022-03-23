@@ -8,7 +8,7 @@
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.FxPanel">
   <TextArea layoutY="30.0" prefHeight="330.0" prefWidth="470.0" wrapText="true"/>
   <Pane layoutX="470.0" prefHeight="360.0" prefWidth="270.0">
-    <TextField fx:id="domainField" alignment="TOP_CENTER" layoutX="6.0" layoutY="5.0" prefWidth="200.0"
+    <TextField fx:id="domainField" alignment="TOP_CENTER" onKeyReleased="#handleDnsLookup" layoutX="6.0" layoutY="5.0" prefWidth="200.0"
                promptText="domain here"/>
     <Label fx:id="domainLabel" alignment="CENTER" layoutY="35.0" prefHeight="24.0" prefWidth="270.0"
            text="DOMAIN NAME HERE" textAlignment="CENTER">

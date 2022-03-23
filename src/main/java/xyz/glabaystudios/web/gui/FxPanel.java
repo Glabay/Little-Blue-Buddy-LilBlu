@@ -9,6 +9,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -303,6 +305,10 @@ public class FxPanel {
 				NetworkExceptionHandler.handleException("openWebpage", e);
 			}
 		}
+	}
+
+	public void handleDnsLookup(KeyEvent keyEvent) {
+		if (keyEvent.getCode() == KeyCode.ENTER && domainField.getText().length() > 3) executeWhoisLookup();
 	}
 
 	enum CallType {
