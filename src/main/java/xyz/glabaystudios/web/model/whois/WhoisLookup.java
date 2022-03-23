@@ -1,9 +1,9 @@
-package xyz.glabaystudios.web.model;
+package xyz.glabaystudios.web.model.whois;
 
 import lombok.Getter;
 import org.apache.commons.net.whois.WhoisClient;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
-import xyz.glabaystudios.web.crawler.SocialSniffer;
+import xyz.glabaystudios.web.crawler.social.SocialCrawler;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -86,7 +86,7 @@ public class WhoisLookup {
 
 		checkSecureConnection();
 
-		result.socialLinkMap = new SocialSniffer(result.domainName, result.sslSecure).getSocialLinkMap();
+		result.socialLinkMap = new SocialCrawler(result.domainName, result.sslSecure).getSocialLinkMap();
 	}
 
 	private void error(String errorMessageFlag) {

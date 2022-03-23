@@ -1,8 +1,9 @@
-package xyz.glabaystudios.web.model;
+package xyz.glabaystudios.web.model.whois;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
+import xyz.glabaystudios.web.model.social.SocialLink;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
