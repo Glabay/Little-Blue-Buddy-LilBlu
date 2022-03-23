@@ -18,8 +18,8 @@ import lombok.Getter;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.Controllers;
 import xyz.glabaystudios.web.LilBlu;
-import xyz.glabaystudios.web.model.Whois;
-import xyz.glabaystudios.web.model.WhoisLookup;
+import xyz.glabaystudios.web.model.whois.Whois;
+import xyz.glabaystudios.web.model.whois.WhoisLookup;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -86,8 +86,7 @@ public class FxPanel {
 		if (domain.isEmpty()) return;
 		WhoisLookup lookup = new WhoisLookup(domain);
 		lookup.filterDumpedData();
-		domainField.clear();
-		socialMediaListView.getItems().clear();
+		resetEverything();
 
 		domainLabel.setText(lookup.getResult().getDomainName());
 		if (lookup.getResult().isInFamily()) {
@@ -190,6 +189,7 @@ public class FxPanel {
 			Stage followUp = new Stage();
 			followUp.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
 			followUp.setResizable(false);
+			followUp.setAlwaysOnTop(true);
 			followUp.setTitle("Follow up Template");
 			followUp.setScene(popup);
 			followUp.setOnCloseRequest(windowEvent -> Controllers.removeFollowUpWindow());
@@ -209,6 +209,7 @@ public class FxPanel {
 			Stage eventWindow = new Stage();
 			eventWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
 			eventWindow.setResizable(false);
+			eventWindow.setAlwaysOnTop(true);
 			eventWindow.setTitle("Missed/Late Event");
 			eventWindow.setScene(popup);
 			eventWindow.setOnCloseRequest(windowEvent -> Controllers.removeMissedEventWindow());
@@ -228,6 +229,7 @@ public class FxPanel {
 			Stage eventWindow = new Stage();
 			eventWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
 			eventWindow.setResizable(false);
+			eventWindow.setAlwaysOnTop(true);
 			eventWindow.setTitle("Scheduled Callback");
 			eventWindow.setScene(popup);
 			eventWindow.setOnCloseRequest(windowEvent -> Controllers.removeCallbackWindow());
