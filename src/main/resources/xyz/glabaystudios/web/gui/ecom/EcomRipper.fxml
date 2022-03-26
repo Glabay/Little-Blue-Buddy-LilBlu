@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="720.0" prefWidth="500.0" style="-fx-background-color: #7B83EB;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.ecom.EcomRipper">
+   <children>
+      <HBox layoutY="114.0" prefHeight="150.0">
+         <children>
+            <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+               <image>
+                  <Image url="@../../lilblu-large.png" />
+               </image>
+            </ImageView>
+            <TextArea fx:id="productDescriptionArea" onMouseClicked="#copyText" prefWidth="200.0" promptText="Product Description goes here. The Images used on either side will be replaced with the product Images." wrapText="true" HBox.hgrow="ALWAYS" />
+            <ImageView fx:id="imageView2" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" HBox.hgrow="ALWAYS">
+               <image>
+                  <Image url="@../../newfold-logo-icon.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+      <TextField fx:id="productUrlField" layoutX="90.0" layoutY="10.0" onKeyReleased="#checkForSearchTrigger" prefHeight="25.0" prefWidth="400.0" />
+      <Label layoutX="10.0" layoutY="13.0" text="Product URL:" />
+      <Button fx:id="productImageDownloadBtn" layoutX="172.0" layoutY="276.0" mnemonicParsing="false" text="Grab Images from product" />
+      <Label layoutX="195.0" layoutY="52.0" text="Product Information:" />
+      <TextField fx:id="productNameField" alignment="CENTER" layoutX="127.0" layoutY="80.0" onMouseClicked="#copyText" prefHeight="25.0" prefWidth="363.0" promptText="Product Name will populate here" />
+      <TextField fx:id="basePriceField" alignment="CENTER" layoutX="9.0" layoutY="80.0" onMouseClicked="#copyText" prefHeight="25.0" prefWidth="110.0" promptText="Base Price" />
+      <Label layoutX="49.0" layoutY="311.0" text="Width" />
+      <TextField fx:id="productWidthField" alignment="CENTER" layoutX="18.0" layoutY="328.0" onMouseClicked="#copyText" prefHeight="25.0" prefWidth="96.0" promptText="Width" />
+      <Label layoutX="172.0" layoutY="311.0" text="Length" />
+      <TextField fx:id="productLengthField" alignment="CENTER" layoutX="141.0" layoutY="328.0" onMouseClicked="#copyText" prefHeight="25.0" prefWidth="96.0" promptText="Length" />
+      <Label layoutX="293.0" layoutY="311.0" text="Height" />
+      <TextField fx:id="productHeightField" alignment="CENTER" layoutX="262.0" layoutY="328.0" onMouseClicked="#copyText" prefHeight="25.0" prefWidth="96.0" promptText="Height" />
+      <Label layoutX="417.0" layoutY="311.0" text="Weight" />
+      <TextField fx:id="productWeightField" alignment="CENTER" layoutX="386.0" layoutY="328.0" onMouseClicked="#copyText" prefHeight="25.0" prefWidth="96.0" promptText="Weight" />
+      <Label layoutX="152.0" layoutY="368.0" text="Confirm Options and Prices">
+         <font>
+            <Font name="Calibri" size="18.0" />
+         </font>
+      </Label>
+      <Separator layoutY="44.0" prefHeight="4.0" prefWidth="500.0" />
+      <VBox fx:id="productOptionsBox" layoutX="11.0" layoutY="410.0" prefHeight="300.0" prefWidth="220.0" />
+      <VBox fx:id="productOptionsAdjustmentsBox" layoutX="270.0" layoutY="410.0" prefHeight="300.0" prefWidth="220.0" />
+   </children>
+</AnchorPane>
