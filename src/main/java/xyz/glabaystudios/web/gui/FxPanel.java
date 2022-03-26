@@ -2,6 +2,7 @@ package xyz.glabaystudios.web.gui;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -12,8 +13,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.paint.*;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -27,14 +31,18 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static xyz.glabaystudios.web.gui.FxPanel.CallType.INBOUND;
 import static xyz.glabaystudios.web.gui.FxPanel.CallType.OUTBOUND;
 
-public class FxPanel {
+public class FxPanel implements Initializable {
 
 	public Font x1;
+	public Pane dnsPane;
+	public Rectangle dnsSquare;
 	@FXML private TextField domainField;
 	@FXML private Label callTypeLabel;
 	@FXML private Label domainLabel;
@@ -44,6 +52,18 @@ public class FxPanel {
 	@FXML private ListView<String> socialMediaListView = new ListView<>(FXCollections.observableArrayList("ns1", "ns2"));
 
 	@Getter Whois result;
+
+	private final Stop[] stops = new Stop[] {
+			new Stop(0, Color.web("#EF7832")),
+			new Stop(1, Color.web("#FFE6A7"))
+	};
+
+	@Override
+	public void initialize(URL url, ResourceBundle resourceBundle) {
+		LinearGradient lngnt = new LinearGradient(1, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
+		dnsSquare.setFill(lngnt);
+	}
+
 
 	public void resetEverything() {
 		callTypeLabel.setTextFill(Paint.valueOf("BLACK"));
@@ -72,13 +92,11 @@ public class FxPanel {
 
 	public void setCallType(CallType callType) {
 		if (callType.equals(INBOUND)) {
-			// set color to GREEN
 			callTypeLabel.setTextFill(Paint.valueOf("GREEN"));
-			callTypeLabel.setText("~REMEMBER THE SURVEY AT THE EOC~");
+			callTypeLabel.setText("~REMEMBER THE SURVEY~");
 		}
 		if (callType.equals(OUTBOUND)) {
-			// set color to GREEN
-			callTypeLabel.setTextFill(Paint.valueOf("ORANGE"));
+			callTypeLabel.setTextFill(Color.web("#ADADAD"));
 			callTypeLabel.setText("~ YOU GOT THIS ~");
 		}
 	}
@@ -293,6 +311,26 @@ public class FxPanel {
 			docuPound.setOnCloseRequest(windowEvent -> Controllers.removeDocuHoundWindow());
 			docuPound.show();
 			docuPound.requestFocus();
+		}
+	}
+
+	public void openEcommRipper() {
+		Scene ripper = null;
+		try {
+			ripper = new Scene(Controllers.getEcommRipperWindow());
+		} catch (IllegalArgumentException e) {
+			NetworkExceptionHandler.handleException("Trying to open a second window: requestAboutWindow", e);
+		}
+		if (ripper != null) {
+			Stage ecomRipperWindow = new Stage();
+			ecomRipperWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
+			ecomRipperWindow.setResizable(false);
+			ecomRipperWindow.setAlwaysOnTop(true);
+			ecomRipperWindow.setTitle("Store Ripper");
+			ecomRipperWindow.setScene(ripper);
+			ecomRipperWindow.setOnCloseRequest(windowEvent -> Controllers.removeEcommRipper());
+			ecomRipperWindow.show();
+			ecomRipperWindow.setOnShown(windowEvent -> ecomRipperWindow.toFront());
 		}
 	}
 

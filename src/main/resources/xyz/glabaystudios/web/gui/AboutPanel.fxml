@@ -1,127 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane prefHeight="410.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="xyz.glabaystudios.web.gui.AboutPanel">
-    <Label layoutX="25.0" layoutY="196.0" text="¤ Base Language">
+<AnchorPane prefHeight="410.0" prefWidth="380.0" style="-fx-background-color: #49003D;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.AboutPanel">
+    <Label layoutX="25.0" layoutY="196.0" text="¤ Base Language" textFill="#00ecef">
         <font>
-            <Font size="13.0"/>
+            <Font size="13.0" />
         </font>
     </Label>
-    <Label layoutX="25.0" layoutY="85.0" text="Written by Mike Glabay of Glabay-Studios">
+    <Label layoutX="25.0" layoutY="85.0" text="Written by Mike Glabay of Glabay-Studios" textFill="#00ecef">
         <font>
-            <Font size="18.0"/>
+            <Font size="18.0" />
         </font>
     </Label>
-    <Label layoutX="98.0" layoutY="9.0" text="Little Blue Buddy">
+    <Label layoutX="98.0" layoutY="9.0" text="Little Blue Buddy" textFill="#00ecef">
         <font>
-            <Font size="24.0"/>
+            <Font size="24.0" />
         </font>
     </Label>
-    <Label layoutX="163.0" layoutY="38.0" text="(LilBlu)">
+    <Label layoutX="163.0" layoutY="38.0" text="(LilBlu)" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="141.0" layoutY="127.0" text="Written with:">
+    <Label layoutX="141.0" layoutY="127.0" text="Written with:" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="32.0" layoutY="164.0" text="Java 11 (LTS)">
+    <Label layoutX="32.0" layoutY="164.0" text="Java 11 (LTS)" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="152.0" layoutY="164.0" text="JavaFX 17">
+    <Label layoutX="152.0" layoutY="164.0" text="JavaFX 17" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="141.0" layoutY="196.0" text="¤ User Interface">
+    <Label layoutX="141.0" layoutY="196.0" text="¤ User Interface" textFill="#00ecef">
         <font>
-            <Font size="13.0"/>
+            <Font size="13.0" />
         </font>
     </Label>
-    <Label layoutX="257.0" layoutY="196.0" text="¤ Web Scraping">
+    <Label layoutX="257.0" layoutY="196.0" text="¤ Web Scraping" textFill="#00ecef">
         <font>
-            <Font size="13.0"/>
+            <Font size="13.0" />
         </font>
     </Label>
-    <Label layoutX="264.0" layoutY="164.0" text="Jsoup 1.14">
+    <Label layoutX="264.0" layoutY="164.0" text="Jsoup 1.14" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="31.0" layoutY="276.0" text="¤ Email Service">
+    <Label layoutX="31.0" layoutY="276.0" text="¤ Email Service" textFill="#00ecef">
         <font>
-            <Font size="13.0"/>
+            <Font size="13.0" />
         </font>
     </Label>
-    <Label layoutX="24.0" layoutY="244.0" text="JavaEE Mail 1.6">
+    <Label layoutX="24.0" layoutY="244.0" text="JavaEE Mail 1.6" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="161.0" layoutY="244.0" text="Apache">
+    <Label layoutX="161.0" layoutY="244.0" text="Apache" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="141.0" layoutY="276.0" text="¤ Commons-net">
+    <Label layoutX="141.0" layoutY="276.0" text="¤ Commons-net" textFill="#00ecef">
         <font>
-            <Font size="13.0"/>
+            <Font size="13.0" />
         </font>
     </Label>
-    <Label layoutX="257.0" layoutY="276.0" text="¤ Annotations">
+    <Label layoutX="257.0" layoutY="276.0" text="¤ Annotations" textFill="#00ecef">
         <font>
-            <Font size="13.0"/>
+            <Font size="13.0" />
         </font>
     </Label>
-    <Label layoutX="258.0" layoutY="244.0" text="lombok 1.18">
+    <Label layoutX="258.0" layoutY="244.0" text="lombok 1.18" textFill="#00ecef">
         <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
         </font>
     </Label>
-    <Label layoutX="155.0" layoutY="295.0" text="¤ Validator">
+    <Label layoutX="155.0" layoutY="295.0" text="¤ Validator" textFill="#00ecef">
         <font>
-            <Font size="13.0"/>
+            <Font size="13.0" />
         </font>
     </Label>
-    <Label fx:id="buildDate" layoutX="1.0" layoutY="394.0" text="Build-Date: %s">
+    <Label fx:id="buildDate" layoutX="1.0" layoutY="394.0" text="Build-Date: %s" textFill="#00ecef">
         <font>
-            <Font size="10.0"/>
+            <Font size="10.0" />
         </font>
     </Label>
-    <Label fx:id="versionLabel" layoutX="1.0" layoutY="380.0" text="Version: %s">
+    <Label fx:id="versionLabel" layoutX="1.0" layoutY="380.0" text="Version: %s" textFill="#00ecef">
         <font>
-            <Font size="10.0"/>
+            <Font size="10.0" />
         </font>
     </Label>
    <ImageView fitHeight="72.0" fitWidth="63.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@../lilblu.png"/>
+      <Image url="@../lilblu-large.png" />
    </ImageView>
-   <ImageView fitHeight="72.0" fitWidth="63.0" layoutX="298.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@../lilblu.png"/>
+   <ImageView fitHeight="72.0" fitWidth="64.0" layoutX="298.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@../lilblu-large.png" />
    </ImageView>
-   <ImageView fx:id="linkedInIcon" fitHeight="32.0" fitWidth="32.0" layoutX="348.0" layoutY="378.0"
-              onMouseClicked="#openLinkedIn" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
-      <Image url="@icon-linkedin.png"/>
+   <ImageView fx:id="linkedInIcon" fitHeight="32.0" fitWidth="32.0" layoutX="348.0" layoutY="378.0" onMouseClicked="#openLinkedIn" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-linkedin.png" />
    </ImageView>
-   <ImageView fx:id="facebookIcon" fitHeight="32.0" fitWidth="32.0" layoutX="316.0" layoutY="378.0"
-              onMouseClicked="#openFacebook" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
-      <Image url="@icon-facebook.png"/>
+   <ImageView fx:id="facebookIcon" fitHeight="32.0" fitWidth="32.0" layoutX="316.0" layoutY="378.0" onMouseClicked="#openFacebook" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-facebook.png" />
    </ImageView>
-   <ImageView fx:id="discordIcon" fitHeight="32.0" fitWidth="32.0" layoutX="284.0" layoutY="378.0"
-              onMouseClicked="#openDiscord" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
-      <Image url="@icon-discord.png"/>
+   <ImageView fx:id="discordIcon" fitHeight="32.0" fitWidth="32.0" layoutX="284.0" layoutY="378.0" onMouseClicked="#openDiscord" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-discord.png" />
    </ImageView>
-   <ImageView fx:id="gitHubIcon" fitHeight="32.0" fitWidth="32.0" layoutX="252.0" layoutY="378.0"
-              onMouseClicked="#openGitHub" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
-      <Image url="@icon-github.png"/>
+   <ImageView fx:id="gitHubIcon" fitHeight="32.0" fitWidth="32.0" layoutX="252.0" layoutY="378.0" onMouseClicked="#openGitHub" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0">
+      <Image url="@icon-github.png" />
+   </ImageView>
+   <ImageView fx:id="newfoldLogo" fitHeight="63.0" fitWidth="178.0" layoutX="101.0" layoutY="337.0" onMouseClicked="#openNewfoldLink" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@../newfold-asset-logo.png" />
+      </image>
    </ImageView>
 </AnchorPane>

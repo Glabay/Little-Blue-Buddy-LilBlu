@@ -54,4 +54,8 @@ public class AboutPanel implements Initializable {
 	public void openDiscord() {
 		openLink("https://discord.gg/9F8Pc7wWnT");
 	}
+
+	public void openNewfoldLink() {
+		openLink("https://newfold.com/newsroom");
+	}
 }

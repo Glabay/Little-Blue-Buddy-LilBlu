@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.gui.AboutPanel;
 import xyz.glabaystudios.web.gui.DocumentRenamer;
+import xyz.glabaystudios.web.gui.ecom.EcomRipper;
 import xyz.glabaystudios.web.gui.pound.DocuHoundWindow;
 import xyz.glabaystudios.web.gui.templates.emails.CallbackWindow;
 import xyz.glabaystudios.web.gui.templates.exceptions.CiscoCodeExceptionWindows;
@@ -24,6 +25,18 @@ public class Controllers {
 	private static Parent missedEventWindow;
 	private static Parent callbackWindow;
 	private static Parent aboutGlabayStudiosWindow;
+	private static Parent ecommRipperWindow;
+
+	public static Parent getEcommRipperWindow() {
+		if (ecommRipperWindow == null) {
+			try {
+				ecommRipperWindow = FXMLLoader.load(Objects.requireNonNull(EcomRipper.class.getResource("EcomRipper.fxml")));
+			} catch (IOException e) {
+				NetworkExceptionHandler.handleException("getEcommRipperWindow", e);
+			}
+		}
+		return ecommRipperWindow;
+	}
 
 	public static Parent getAboutGlabayStudiosWindow() {
 		if (aboutGlabayStudiosWindow == null) {
@@ -114,6 +127,10 @@ public class Controllers {
 	}
 
 
+
+	public static void removeEcommRipper() {
+		ecommRipperWindow = null;
+	}
 
 	public static void removeCiscoCodeExceptionWindow() {
 		ciscoCodeExceptionWindow = null;
