@@ -12,7 +12,7 @@ public interface WebsitePageCrawler {
 
 	default Document getContent(String domain, String userAgent, boolean usingSecureConnection) {
 		try {
-			return Jsoup.connect((usingSecureConnection ? "https://" : "http://") + domain).userAgent(userAgent).timeout(4200).get();
+			return Jsoup.connect((usingSecureConnection ? "https://" : "http://") + domain).userAgent(userAgent).timeout(42000).get();
 		} catch (IOException e) {
 			NetworkExceptionHandler.handleException("getContent -> InputOutput " + domain, e);
 			return null;

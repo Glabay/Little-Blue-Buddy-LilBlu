@@ -50,7 +50,7 @@ public class EcomRipper implements Initializable {
 
 	private void fetchStoreInformation() {
 		String link = productUrlField.getText();
-		EcommCrawler ecommCrawler = new EcommCrawler(link);
+		EcommCrawler ecommCrawler = EcommCrawler.getCrawlingMerchant(link);
 		ecommCrawler.crawlThePageForContent();
 
 		getProductNameField().setAlignment(Pos.CENTER_LEFT);
