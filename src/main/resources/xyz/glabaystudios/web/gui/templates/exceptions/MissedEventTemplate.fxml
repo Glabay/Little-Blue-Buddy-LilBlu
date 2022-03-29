@@ -2,25 +2,24 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane prefHeight="228.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="xyz.glabaystudios.web.gui.templates.exceptions.MissedEventWindow">
-   <ComboBox fx:id="eventType" layoutX="123.0" layoutY="52.0" prefHeight="25.0" prefWidth="176.0"
-             promptText="Select Missed/Late Event"/>
-   <TextArea fx:id="notesArea" layoutX="1.0" layoutY="100.0" prefHeight="90.0" prefWidth="298.0"
-             promptText="Reason for missed event"/>
-   <TextField fx:id="eventDateField" alignment="CENTER" layoutX="1.0" layoutY="2.0" prefHeight="25.0" prefWidth="140.0"
-              promptText="March 3, 2022"/>
-   <Spinner fx:id="eventTakenHr" editable="true" layoutX="146.0" layoutY="2.0" prefHeight="25.0" prefWidth="56.0"/>
-   <Spinner fx:id="eventTakenMin" editable="true" layoutX="205.0" layoutY="2.0" prefHeight="25.0" prefWidth="56.0"/>
-   <ToggleButton fx:id="eventMerridieBtn" layoutX="263.0" layoutY="2.0" mnemonicParsing="false"
-                 onAction="#toggleMerridie" text="AM"/>
-   <Button fx:id="sendEmailBtn" layoutX="11.0" layoutY="199.0" mnemonicParsing="false" onAction="#sendEmail"
-           text="Send Email"/>
-   <Button fx:id="discardEmailBtn" layoutX="235.0" layoutY="199.0" mnemonicParsing="false" onAction="#sendCloseAction"
-           text="Discard"/>
-   <Label fx:id="eventTimeLabel" alignment="CENTER" layoutX="148.0" layoutY="27.0" prefHeight="17.0" prefWidth="149.0"
-          text="Time Event was taken"/>
-   <Label layoutX="21.0" layoutY="56.0" text="Event Reporting:"/>
-   <Label layoutX="38.0" layoutY="27.0" text="Event Date:"/>
+<AnchorPane prefHeight="228.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.templates.exceptions.MissedEventWindow">
+   <ComboBox fx:id="eventType" layoutX="123.0" layoutY="52.0" onAction="#selectEventType" prefHeight="25.0" prefWidth="176.0" promptText="Select Missed/Late Event" />
+   <TextArea fx:id="notesArea" layoutX="1.0" layoutY="100.0" prefHeight="90.0" prefWidth="298.0" promptText="Reason for missed event" />
+   <TextField fx:id="eventDateField" alignment="CENTER" layoutX="1.0" layoutY="2.0" prefHeight="25.0" prefWidth="140.0" promptText="March 3, 2022" />
+   <Spinner fx:id="eventTakenHr" editable="true" layoutX="146.0" layoutY="2.0" prefHeight="25.0" prefWidth="56.0" />
+   <Spinner fx:id="eventTakenMin" editable="true" layoutX="205.0" layoutY="2.0" prefHeight="25.0" prefWidth="56.0" />
+   <ToggleButton fx:id="eventMerridieBtn" layoutX="263.0" layoutY="2.0" mnemonicParsing="false" onAction="#toggleMerridie" text="AM" />
+   <Button fx:id="sendEmailBtn" layoutX="11.0" layoutY="199.0" mnemonicParsing="false" onAction="#sendEmail" text="Send Email" />
+   <Button fx:id="discardEmailBtn" layoutX="235.0" layoutY="199.0" mnemonicParsing="false" onAction="#sendCloseAction" text="Discard" />
+   <Label fx:id="eventTimeLabel" alignment="CENTER" layoutX="148.0" layoutY="27.0" prefHeight="17.0" prefWidth="149.0" text="Time Event was taken" />
+   <Label layoutX="21.0" layoutY="56.0" text="Event Reporting:" />
+   <Label layoutX="38.0" layoutY="27.0" text="Event Date:" />
+   <TextField fx:id="workdayMealFieldOut" layoutX="213.0" layoutY="111.0" prefHeight="25.0" prefWidth="75.0" />
+   <TextField fx:id="workdayMealFieldIn" layoutX="213.0" layoutY="154.0" prefHeight="25.0" prefWidth="75.0" />
+   <Label fx:id="workdayMealLabelOut" layoutX="149.0" layoutY="158.0" text="Meal Out" />
+   <Label fx:id="workdayMealLabelIn" layoutX="159.0" layoutY="115.0" text="Meal In" />
+   <TextField fx:id="workdayShiftFieldOut" layoutX="66.0" layoutY="111.0" prefHeight="25.0" prefWidth="75.0" />
+   <TextField fx:id="workdayShiftFieldIn" layoutX="66.0" layoutY="154.0" prefHeight="25.0" prefWidth="75.0" />
+   <Label fx:id="workdayShiftLabelOut" layoutX="8.0" layoutY="158.0" text="Day Out" />
+   <Label fx:id="workdayShiftLabelIn" layoutX="17.0" layoutY="115.0" text="Day In" />
 </AnchorPane>

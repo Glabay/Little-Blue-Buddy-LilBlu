@@ -31,6 +31,14 @@ public class MissedEventWindow implements Initializable {
 	@FXML public Button discardEmailBtn;
 	@FXML public ComboBox<String> eventType;
 	@FXML public Label eventTimeLabel;
+	@FXML public TextField workdayMealFieldOut;
+	@FXML public TextField workdayMealFieldIn;
+	@FXML public Label workdayMealLabelOut;
+	@FXML public Label workdayMealLabelIn;
+	@FXML public TextField workdayShiftFieldOut;
+	@FXML public TextField workdayShiftFieldIn;
+	@FXML public Label workdayShiftLabelOut;
+	@FXML public Label workdayShiftLabelIn;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -42,6 +50,14 @@ public class MissedEventWindow implements Initializable {
 		eventType.setItems(getCodeNames());
 		eventType.getSelectionModel().select(0);
 		notesArea.setWrapText(true);
+		workdayMealFieldOut.toBack();
+		workdayMealFieldIn.toBack();
+		workdayMealLabelOut.toBack();
+		workdayMealLabelIn.toBack();
+		workdayShiftFieldOut.toBack();
+		workdayShiftFieldIn.toBack();
+		workdayShiftLabelOut.toBack();
+		workdayShiftLabelIn.toBack();
 	}
 
 	private SpinnerValueFactory.IntegerSpinnerValueFactory getSpinner(int min, int max, int startingPoint) {
@@ -64,14 +80,6 @@ public class MissedEventWindow implements Initializable {
 	}
 
 	public void sendEmail() {
-		if (notesArea.getText().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING,
-					"Please provide a reason for this exception.",
-					ButtonType.CLOSE,
-					ButtonType.OK)
-					.show();
-			return;
-		}
 		if (eventTakenHr.getEditor().getText().isEmpty() || eventTakenMin.getEditor().getText().isEmpty()) {
 			eventTakenHr.setValueFactory(getSpinner(1, 12, getStartHr()));
 			eventTakenMin.setValueFactory(getSpinner(0, 59, getStartMin()));
@@ -81,7 +89,36 @@ public class MissedEventWindow implements Initializable {
 		emailTemplate.setDate(eventDateField.getText());
 		emailTemplate.setEvent(eventType.getSelectionModel().getSelectedItem());
 		emailTemplate.setTimeTaken(getTime());
-		emailTemplate.setReason(notesArea.getText());
+
+		if (eventType.getSelectionModel().getSelectedItem().equalsIgnoreCase("Workday Event")) {
+			if (notesArea.getText().isEmpty()) {
+				new Alert(Alert.AlertType.WARNING,
+						"Please provide a timeframe for this exception.",
+						ButtonType.CLOSE,
+						ButtonType.OK)
+						.show();
+				return;
+			}
+			String message = String.format(
+					"Shift Start: %s%nMean Out: %s%nMeal In: %s%nShift End: %s%n",
+					workdayMealFieldOut.getText(),
+					workdayMealFieldIn.getText(),
+					workdayShiftFieldOut.getText(),
+					workdayShiftFieldIn.getText()
+			);
+
+			emailTemplate.setReason(message);
+		} else {
+			if (notesArea.getText().isEmpty()) {
+			new Alert(Alert.AlertType.WARNING,
+					"Please provide a reason for this exception.",
+					ButtonType.CLOSE,
+					ButtonType.OK)
+					.show();
+				return;
+			}
+			emailTemplate.setReason(notesArea.getText());
+		}
 
 		new ExceptionEmail(emailTemplate.getEvent())
 				.setRecipients(Recipients.E_TIME)
@@ -104,5 +141,33 @@ public class MissedEventWindow implements Initializable {
 	public void toggleMerridie(ActionEvent actionEvent) {
 		ToggleButton btn = (ToggleButton) actionEvent.getSource();
 		btn.setText(btn.isSelected() ? "PM" : "AM");
+	}
+
+	public void selectEventType() {
+		if (eventType.getSelectionModel().getSelectedItem().equalsIgnoreCase("Workday Event")) {
+			notesArea.toBack();
+			notesArea.setPromptText("");
+			notesArea.setDisable(true);
+			workdayMealFieldOut.toFront();
+			workdayMealFieldIn.toFront();
+			workdayMealLabelOut.toFront();
+			workdayMealLabelIn.toFront();
+			workdayShiftFieldOut.toFront();
+			workdayShiftFieldIn.toFront();
+			workdayShiftLabelOut.toFront();
+			workdayShiftLabelIn.toFront();
+		} else {
+			workdayMealFieldOut.toBack();
+			workdayMealFieldIn.toBack();
+			workdayMealLabelOut.toBack();
+			workdayMealLabelIn.toBack();
+			workdayShiftFieldOut.toBack();
+			workdayShiftFieldIn.toBack();
+			workdayShiftLabelOut.toBack();
+			workdayShiftLabelIn.toBack();
+			notesArea.toFront();
+			notesArea.setPromptText("Reason for missed event");
+			notesArea.setDisable(false);
+		}
 	}
 }

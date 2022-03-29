@@ -7,9 +7,7 @@ public enum Events {
 	FIRST_BREAK     ("First break"),
 	LUNCH           ("Lunch"),
 	SECOND_BREAK    ("Second Break"),
-	WORKDAY_LOGIN   ("Workday Shift-Start"),
-	WORKDAY_LOGOUT  ("Workday Shift-End"),
-	WORKDAY_LUNCH   ("Workday Lunch-punch"),
+	WORKDAY   ("Workday Event"),
 	OTHER           ("Other (Details below)")
 	;
 
