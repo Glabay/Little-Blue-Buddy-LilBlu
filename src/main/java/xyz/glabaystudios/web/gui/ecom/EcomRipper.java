@@ -66,7 +66,7 @@ public class EcomRipper implements Initializable {
 		productOptionsAdjustmentsBox.getChildren().clear();
 		populateOptions(options, productOptionsBox);
 		populateOptions(optionAdjustments, productOptionsAdjustmentsBox);
-
+		productUrlField.clear();
 	}
 
 	private void populateOptions(HashMap<String, List<String>> optionMap, VBox vBox) {
