@@ -12,7 +12,7 @@ public class EtsyCrawler extends EcommCrawler {
 		super(domain);
 	}
 
-	private ArrayList<String> optionNames = new ArrayList<>();
+	private final ArrayList<String> optionNames = new ArrayList<>();
 
 	@Override
 	public void crawlThePageForContent() {
@@ -23,8 +23,7 @@ public class EtsyCrawler extends EcommCrawler {
 	}
 
 	protected void filterProductImages() {
-		Elements elements = page.select("li.wt-mr-xs-1 img");
-		Elements imageElements = page.select("img");
+		Elements elements = page.select("div.image-carousel-container img");
 
 		elements.forEach(element -> {
 			String imageLink = element.attr("src");
@@ -57,9 +56,9 @@ public class EtsyCrawler extends EcommCrawler {
 			if (str.contains("$") && str.contains("(")) {
 				String priceStr = str.split("\\(")[1].replaceAll("[^\\d.]", ""); // remove non-numbers
 				double adjustedPrice = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr);// parse the price
-				double saleValue = Double.parseDouble(page.select("div.wt-mb-xs-3 p.wt-text-slime").text().split("\\(")[0].replaceAll("[^\\d.]", ""));
-				boolean sale = saleValue > 0.0;
-				double adjustment = sale ? ((adjustedPrice + saleValue) - getProduct().getProductPriceBase()) : (adjustedPrice - getProduct().getProductPriceBase());
+				String priceStr2 = page.select("div.wt-mb-xs-3 p.wt-text-slime").text().split("\\(")[0].replaceAll("[^\\d.]", "");
+				boolean sale = !priceStr2.isEmpty();
+				double adjustment = sale ? ((adjustedPrice + Double.parseDouble(priceStr2)) - getProduct().getProductPriceBase()) : (adjustedPrice - getProduct().getProductPriceBase());
 				String formatted = String.format("%s %s %s", str.split("\\(")[0].trim(), (adjustment > 0.0 ? "+" : "-"), priceStr.isEmpty() ? "Sold-Out" : ("$" + decimalFormat.format(adjustment)));
 				formattedResult.add(formatted);
 			}
@@ -78,7 +77,7 @@ public class EtsyCrawler extends EcommCrawler {
 	}
 
 	protected void filterProductBasicInfo() {
-		String title = page.select("div.cart-col h1").text(); // product name
+		String title = page.select("div.cart-col h1.wt-text-body-03.wt-line-height-tight.wt-break-word").text(); // product name
 		getProduct().setProductName(title);
 
 		double price = scrapePrice();

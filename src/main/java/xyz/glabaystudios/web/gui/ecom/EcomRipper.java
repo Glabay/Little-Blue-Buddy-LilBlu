@@ -84,7 +84,7 @@ public class EcomRipper implements Initializable {
 
 	private void loadImages(ArrayList<String> images) {
 		imageView.setImage(new Image(formatProductImageLink(images.get(0))));
-		imageView2.setImage(new Image(formatProductImageLink(images.get(1))));
+		if (images.size() > 1) imageView2.setImage(new Image(formatProductImageLink(images.get(images.size() - 1))));
 	}
 
 	private String formatProductImageLink(String input) {

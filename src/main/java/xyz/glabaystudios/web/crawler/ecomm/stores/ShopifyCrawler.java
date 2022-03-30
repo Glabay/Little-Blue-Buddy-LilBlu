@@ -1,5 +1,6 @@
 package xyz.glabaystudios.web.crawler.ecomm.stores;
 
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
@@ -28,7 +29,7 @@ public class ShopifyCrawler extends EcommCrawler {
 		filterProductsForPriceAdjustments(productMisc);
 	}
 
-	protected void filterProductsForPriceAdjustments(Elements extras) {
+	protected void filterProductsForPriceAdjustments(@NotNull Elements extras) {
 //		System.out.println("******** NEXT - MISC ELEMENTS ********");
 		List<String> list = new ArrayList<>();
 		extras.forEach(misc -> list.add(misc.text()));
@@ -61,7 +62,7 @@ public class ShopifyCrawler extends EcommCrawler {
 		}
 	}
 
-	protected void filterProductOptions(Elements itemOptions) {
+	protected void filterProductOptions(@NotNull Elements itemOptions) {
 //		System.out.println("******** NEXT - OPTION ELEMENTS ********");
 		itemOptions.forEach(option -> {
 			String optionName = option.attr("data-name");
@@ -74,7 +75,7 @@ public class ShopifyCrawler extends EcommCrawler {
 		});
 	}
 
-	protected void filterProductImages(Elements productImages) {
+	protected void filterProductImages(@NotNull Elements productImages) {
 //		System.out.println("******** NEXT - IMAGE ELEMENTS ********");
 		for (Element element : productImages) {
 			String ele = element.attr("src");

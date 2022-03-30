@@ -9,7 +9,7 @@
    <children>
       <HBox layoutY="114.0" prefHeight="150.0">
          <children>
-            <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+            <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" HBox.hgrow="ALWAYS">
                <image>
                   <Image url="@../../lilblu-large.png" />
                </image>
