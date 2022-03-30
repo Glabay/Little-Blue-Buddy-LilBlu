@@ -95,7 +95,6 @@ public class DefaultCrawler extends EcommCrawler {
 				if (ele.equalsIgnoreCase("name") && !value.isEmpty()) getProduct().setProductName(value);
 				if (ele.equalsIgnoreCase("price") && !value.isEmpty()) getProduct().setProductPriceBase(Double.parseDouble(value.replaceAll("[^\\d.]", "")));
 				if (ele.equalsIgnoreCase("description") && !value.isEmpty()) getProduct().setProductDescription(value);
-				if (ele.equalsIgnoreCase("image") && !value.isEmpty()) getProduct().setProductDescription(value); // ?? do I NEED this
 			});
 			if (getProduct().getProductName() == null) {
 				getProduct().setProductName(page.select("h1.product-single__title").text());

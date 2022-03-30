@@ -69,13 +69,15 @@ public class CiscoCodeExceptionWindows implements Initializable {
 		return FXCollections.observableArrayList(codes);
 	}
 
+	Alert warning;
 	public void sendExceptionEmail() {
 		if (exceptionExplanation.getText().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING,
+			warning = new Alert(Alert.AlertType.WARNING,
 					"Please provide a reason for this exception.",
 					ButtonType.CLOSE,
-					ButtonType.OK)
-					.show();
+					ButtonType.OK);
+			warning.initOwner(Controllers.getCiscoCodeExceptionWindow().getScene().getWindow());
+			warning.show();
 			return;
 		}
 		if (exceptionTimeFinishedMin.getEditor().getText().isEmpty() || exceptionTimeFinishedHr.getEditor().getText().isEmpty()) {

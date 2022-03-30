@@ -59,6 +59,7 @@ public class CallbackWindow implements Initializable {
 		callbackDetailedReasonArea.setWrapText(true);
 		rebuttalReasonOne.setWrapText(true);
 		rebuttalReasonTwo.setWrapText(true);
+		missingFields.initOwner(Controllers.getCallbackWindow().getScene().getWindow());
 	}
 
 	@FXML

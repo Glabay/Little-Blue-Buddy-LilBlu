@@ -90,13 +90,15 @@ public class MissedEventWindow implements Initializable {
 		emailTemplate.setEvent(eventType.getSelectionModel().getSelectedItem());
 		emailTemplate.setTimeTaken(getTime());
 
+		Alert warning;
 		if (eventType.getSelectionModel().getSelectedItem().equalsIgnoreCase("Workday Event")) {
 			if (notesArea.getText().isEmpty()) {
-				new Alert(Alert.AlertType.WARNING,
+				warning = new Alert(Alert.AlertType.WARNING,
 						"Please provide a timeframe for this exception.",
 						ButtonType.CLOSE,
-						ButtonType.OK)
-						.show();
+						ButtonType.OK);
+				warning.initOwner(Controllers.getMissedEventWindow().getScene().getWindow());
+				warning.show();
 				return;
 			}
 			String message = String.format(
@@ -110,11 +112,12 @@ public class MissedEventWindow implements Initializable {
 			emailTemplate.setReason(message);
 		} else {
 			if (notesArea.getText().isEmpty()) {
-			new Alert(Alert.AlertType.WARNING,
+				warning = new Alert(Alert.AlertType.WARNING,
 					"Please provide a reason for this exception.",
 					ButtonType.CLOSE,
-					ButtonType.OK)
-					.show();
+					ButtonType.OK);
+				warning.initOwner(Controllers.getMissedEventWindow().getScene().getWindow());
+				warning.show();
 				return;
 			}
 			emailTemplate.setReason(notesArea.getText());

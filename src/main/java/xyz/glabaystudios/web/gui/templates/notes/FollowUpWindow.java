@@ -74,6 +74,7 @@ public class FollowUpWindow implements Initializable {
 	Alert unknownCase = new Alert(Alert.AlertType.CONFIRMATION,  "What case are you following up on?.", ButtonType.CLOSE, ButtonType.OK);
 
 	public void copyResultToClipboard() {
+		unknownCase.initOwner(Controllers.getFollowUpWindow().getScene().getWindow());
 		if (caseField.getText().isEmpty()) {
 			unknownCase.show();
 			return;

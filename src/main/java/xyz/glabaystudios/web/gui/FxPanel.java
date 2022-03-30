@@ -53,6 +53,8 @@ public class FxPanel implements Initializable {
 
 	@Getter Whois result;
 
+	Alert dnsInfo = new Alert(Alert.AlertType.INFORMATION);
+
 	private final Stop[] stops = new Stop[] {
 			new Stop(0, Color.web("#EF7832")),
 			new Stop(1, Color.web("#FFE6A7"))
@@ -62,6 +64,7 @@ public class FxPanel implements Initializable {
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		LinearGradient lngnt = new LinearGradient(1, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
 		dnsSquare.setFill(lngnt);
+		dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
 	}
 
 
@@ -122,12 +125,11 @@ public class FxPanel implements Initializable {
 			mxLabel.setUnderline(true);
 			mxLabel.setOnMouseClicked(mouseEvent -> {
 				if (mxLabel.isUnderline()) {
-					Alert mailServerAlert = new Alert(Alert.AlertType.INFORMATION);
 					StringBuilder message = new StringBuilder();
 					lookup.getResult().getMailServers().forEach(mailServer -> message.append(mailServer).append("\n"));
-					mailServerAlert.setTitle("Mail Exchange Servers.");
-					mailServerAlert.setHeaderText("Mail server for " + lookup.getResult().getDomainName());
-					setMessageAndShow(mailServerAlert, message);
+					dnsInfo.setTitle("Mail Exchange Servers.");
+					dnsInfo.setHeaderText("Mail server for " + lookup.getResult().getDomainName());
+					setMessageAndShow(dnsInfo, message);
 				}
 			});
 		}
@@ -149,29 +151,20 @@ public class FxPanel implements Initializable {
 			domainNameServerLabel.setUnderline(true);
 			domainNameServerLabel.setOnMouseClicked(mouseEvent -> {
 				if (domainNameServerLabel.isUnderline()) {
-					Alert nameServerAlert = new Alert(Alert.AlertType.INFORMATION);
 					StringBuilder message = new StringBuilder();
 					lookup.getResult().getNameServers().forEach(nameServer -> message.append(nameServer).append("\n"));
-					nameServerAlert.setTitle("Name Server List.");
-					nameServerAlert.setHeaderText("Name Servers for " + lookup.getResult().getDomainName());
-					setMessageAndShow(nameServerAlert, message);
+					dnsInfo.setTitle("Name Server List.");
+					dnsInfo.setHeaderText("Name Servers for " + lookup.getResult().getDomainName());
+					setMessageAndShow(dnsInfo, message);
 				}
 			});
 		}
 
 	}
 
-	private void setMessageAndShow(Alert nameServerAlert, StringBuilder message) {
-		nameServerAlert.setContentText(message.toString());
-		nameServerAlert.setOnHidden(window -> {
-			Stage stage = (Stage) Controllers.getMainWindow().getScene().getWindow();
-			stage.setAlwaysOnTop(true);
-		});
-		nameServerAlert.setOnShown(window -> {
-			Stage stage = (Stage) Controllers.getMainWindow().getScene().getWindow();
-			stage.setAlwaysOnTop(false);
-		});
-		nameServerAlert.showAndWait();
+	private void setMessageAndShow(Alert dnsInfo, StringBuilder message) {
+		dnsInfo.setContentText(message.toString());
+		dnsInfo.show();
 	}
 
 	public void requestCloseAction() {
