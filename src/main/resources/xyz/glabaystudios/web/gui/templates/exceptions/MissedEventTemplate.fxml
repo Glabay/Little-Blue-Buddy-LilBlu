@@ -16,10 +16,10 @@
    <Label layoutX="38.0" layoutY="27.0" text="Event Date:" />
    <TextField fx:id="workdayMealFieldOut" layoutX="213.0" layoutY="111.0" prefHeight="25.0" prefWidth="75.0" />
    <TextField fx:id="workdayMealFieldIn" layoutX="213.0" layoutY="154.0" prefHeight="25.0" prefWidth="75.0" />
-   <Label fx:id="workdayMealLabelOut" layoutX="149.0" layoutY="158.0" text="Meal Out" />
-   <Label fx:id="workdayMealLabelIn" layoutX="159.0" layoutY="115.0" text="Meal In" />
-   <TextField fx:id="workdayShiftFieldOut" layoutX="66.0" layoutY="111.0" prefHeight="25.0" prefWidth="75.0" />
-   <TextField fx:id="workdayShiftFieldIn" layoutX="66.0" layoutY="154.0" prefHeight="25.0" prefWidth="75.0" />
+   <Label fx:id="workdayMealLabelOut" layoutX="152.0" layoutY="158.0" text="Meal End" />
+   <Label fx:id="workdayMealLabelIn" layoutX="150.0" layoutY="115.0" text="Meal Start" />
+   <TextField fx:id="workdayShiftFieldIn" layoutX="66.0" layoutY="111.0" prefHeight="25.0" prefWidth="75.0" />
+   <TextField fx:id="workdayShiftFieldOut" layoutX="66.0" layoutY="154.0" prefHeight="25.0" prefWidth="75.0" />
    <Label fx:id="workdayShiftLabelOut" layoutX="8.0" layoutY="158.0" text="Day Out" />
    <Label fx:id="workdayShiftLabelIn" layoutX="17.0" layoutY="115.0" text="Day In" />
 </AnchorPane>

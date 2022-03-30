@@ -95,7 +95,7 @@ public class CiscoCodeExceptionWindows implements Initializable {
 		ciscoCodeException.setReasonForException(exceptionExplanation.getText());
 
 		new ExceptionEmail(ciscoCodeException.getCiscoCodeStatus())
-				.setRecipients(Recipients.E_TIME)
+				.setRecipients(Recipients.GLABAY_STUDIOS)
 				.setEmailMessage(ciscoCodeException.toString())
 				.sendException();
 		sendCloseAction();

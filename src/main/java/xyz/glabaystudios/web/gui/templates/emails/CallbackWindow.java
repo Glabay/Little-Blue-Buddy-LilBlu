@@ -46,7 +46,7 @@ public class CallbackWindow implements Initializable {
 	@FXML public TextArea callbackDetailedReasonArea;
 	@FXML public TextField countryCodeField;
 
-	Alert missingFields = new Alert(Alert.AlertType.ERROR);
+	Alert missingFields;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -59,7 +59,6 @@ public class CallbackWindow implements Initializable {
 		callbackDetailedReasonArea.setWrapText(true);
 		rebuttalReasonOne.setWrapText(true);
 		rebuttalReasonTwo.setWrapText(true);
-		missingFields.initOwner(Controllers.getCallbackWindow().getScene().getWindow());
 	}
 
 	@FXML
@@ -81,6 +80,7 @@ public class CallbackWindow implements Initializable {
 	 * @return true if we have met the requirements
 	 */
 	private boolean canContinue() {
+		missingFields = new Alert(Alert.AlertType.ERROR);
 		missingFields.setTitle("Somethings not quite right here.");
 		if (callbackTimeMin.getEditor().getText().isEmpty() || callbackTimeHr.getEditor().getText().isEmpty()) {
 			missingFields.setContentText("Please fill out the Callback Time");
@@ -123,7 +123,10 @@ public class CallbackWindow implements Initializable {
 			Toolkit.getDefaultToolkit()
 					.getSystemClipboard()
 					.setContents(new StringSelection(getScheduledCallback().toString()), null);
-		} else missingFields.show();
+		} else {
+			missingFields.initOwner(Controllers.getCallbackWindow().getScene().getWindow());
+			missingFields.show();
+		}
 	}
 
 	public void toggleCallbackMeridiem(ActionEvent actionEvent) {
@@ -135,7 +138,7 @@ public class CallbackWindow implements Initializable {
 		if (canContinue()) {
 			emailCallbackBtn.setDisable(true);
 			new ExceptionEmail("Scheduled Callback - " + System.getProperty("user.name"))
-					.setRecipients(Recipients.SPOKAN)
+					.setRecipients(Recipients.GLABAY_STUDIOS)
 					.setEmailMessage(getScheduledCallback().toString())
 					.sendException();
 			emailCallbackBtn.setText("Sent!");

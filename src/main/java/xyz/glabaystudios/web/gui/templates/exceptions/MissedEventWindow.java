@@ -92,21 +92,12 @@ public class MissedEventWindow implements Initializable {
 
 		Alert warning;
 		if (eventType.getSelectionModel().getSelectedItem().equalsIgnoreCase("Workday Event")) {
-			if (notesArea.getText().isEmpty()) {
-				warning = new Alert(Alert.AlertType.WARNING,
-						"Please provide a timeframe for this exception.",
-						ButtonType.CLOSE,
-						ButtonType.OK);
-				warning.initOwner(Controllers.getMissedEventWindow().getScene().getWindow());
-				warning.show();
-				return;
-			}
 			String message = String.format(
-					"Shift Start: %s%nMean Out: %s%nMeal In: %s%nShift End: %s%n",
+					"%nShift Start: %s%nMeal Out: %s%nMeal In: %s%nShift End: %s%n",
+					workdayShiftFieldIn.getText(),
 					workdayMealFieldOut.getText(),
 					workdayMealFieldIn.getText(),
-					workdayShiftFieldOut.getText(),
-					workdayShiftFieldIn.getText()
+					workdayShiftFieldOut.getText()
 			);
 
 			emailTemplate.setReason(message);
@@ -124,7 +115,7 @@ public class MissedEventWindow implements Initializable {
 		}
 
 		new ExceptionEmail(emailTemplate.getEvent())
-				.setRecipients(Recipients.E_TIME)
+				.setRecipients(Recipients.GLABAY_STUDIOS)
 				.setEmailMessage(emailTemplate.toString())
 				.sendException();
 		sendCloseAction();

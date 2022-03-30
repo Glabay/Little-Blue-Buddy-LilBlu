@@ -64,7 +64,6 @@ public class FxPanel implements Initializable {
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		LinearGradient lngnt = new LinearGradient(1, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
 		dnsSquare.setFill(lngnt);
-		dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
 	}
 
 
@@ -127,6 +126,7 @@ public class FxPanel implements Initializable {
 				if (mxLabel.isUnderline()) {
 					StringBuilder message = new StringBuilder();
 					lookup.getResult().getMailServers().forEach(mailServer -> message.append(mailServer).append("\n"));
+					dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
 					dnsInfo.setTitle("Mail Exchange Servers.");
 					dnsInfo.setHeaderText("Mail server for " + lookup.getResult().getDomainName());
 					setMessageAndShow(dnsInfo, message);
@@ -155,6 +155,7 @@ public class FxPanel implements Initializable {
 					lookup.getResult().getNameServers().forEach(nameServer -> message.append(nameServer).append("\n"));
 					dnsInfo.setTitle("Name Server List.");
 					dnsInfo.setHeaderText("Name Servers for " + lookup.getResult().getDomainName());
+					dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
 					setMessageAndShow(dnsInfo, message);
 				}
 			});
