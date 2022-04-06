@@ -19,16 +19,7 @@ public class EtsyCrawler extends EcommCrawler {
 		if (page == null) return;
 		filterProductBasicInfo();
 		filterProduct();
-		filterProductImages();
-	}
-
-	protected void filterProductImages() {
-		Elements elements = page.select("div.image-carousel-container img");
-
-		elements.forEach(element -> {
-			String imageLink = element.attr("src");
-			if (!imageLink.isBlank() || !imageLink.isEmpty()) getProduct().getProductImages().add(imageLink);
-		});
+		addImages(page.select("div.image-carousel-container img"));
 	}
 
 	protected void filterProduct() {
@@ -90,12 +81,11 @@ public class EtsyCrawler extends EcommCrawler {
 		System.out.println(priceOptions);
 		String priceStr = "";
 		for (String price : priceOptions) {
-			if (price.startsWith("Original")) priceStr = (page.select("div.cart-col p.wt-text-strikethrough").text().replaceAll("[^\\d.]", ""));
-			if (price.startsWith("Price")) priceStr = (page.select("div.cart-col p.wt-text-title-03").text().replaceAll("[^\\d.]", ""));
+			if (price.startsWith("Original")) priceStr = cleanPrice(page.select("div.cart-col p.wt-text-strikethrough").text());
+			if (price.startsWith("Price")) priceStr = cleanPrice(page.select("div.cart-col p.wt-text-title-03").text());
 		}
-		if (priceStr.isEmpty()) {
-			priceStr = (page.select("div.wt-mb-xs-3 p.wt-text-title-03").text().replaceAll("[^\\d.]", ""));
-		}
-		return Double.parseDouble(priceStr);
+		if (priceStr.isEmpty()) priceStr = cleanPrice(page.select("div.wt-mb-xs-3 p.wt-text-title-03").text());
+
+		return formatPrice(priceStr);
 	}
 }

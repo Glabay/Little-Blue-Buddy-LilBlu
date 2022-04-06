@@ -1,7 +1,5 @@
 package xyz.glabaystudios.web.crawler.ecomm.stores;
 
-import org.jetbrains.annotations.NotNull;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
 
@@ -19,17 +17,16 @@ public class ShopifyCrawler extends EcommCrawler {
 	@Override
 	public void crawlThePageForContent() {
 		if (page == null) return;
-		Elements productImages =    page.select("img");
 		Elements productOption =    page.select("select.single-option-selector");
 		Elements productMisc =      page.select("select.product-form__variants option");
 
 		filterProductBasicInfo();
-		filterProductImages(productImages);
+		addImages(page.select("div.grid.product-single img"));
 		filterProductOptions(productOption);
 		filterProductsForPriceAdjustments(productMisc);
 	}
 
-	protected void filterProductsForPriceAdjustments(@NotNull Elements extras) {
+	protected void filterProductsForPriceAdjustments(Elements extras) {
 //		System.out.println("******** NEXT - MISC ELEMENTS ********");
 		List<String> list = new ArrayList<>();
 		extras.forEach(misc -> list.add(misc.text()));
@@ -53,7 +50,7 @@ public class ShopifyCrawler extends EcommCrawler {
 				String priceStr = listingSplit[1].replaceAll("[^\\d.]", ""); // remove non-numbers
 				double adjustedPrice = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr);// parse the price
 				double adjustment = (adjustedPrice - getProduct().getProductPriceBase());
-				String formatted = String.format("%s %s %s", opt, (adjustment > 0.0 ? "+" : "-"), priceStr.isEmpty() ? "Sold-Out" : ("$" + decimalFormat.format(adjustment)));
+				String formatted = String.format("%s %s %s", opt, (adjustment > 0.0 ? "+" : "-"), ("$" + decimalFormat.format(adjustment)));
 				optionChoices.add(formatted);
 //				System.out.println(formatted);
 			}
@@ -62,7 +59,7 @@ public class ShopifyCrawler extends EcommCrawler {
 		}
 	}
 
-	protected void filterProductOptions(@NotNull Elements itemOptions) {
+	protected void filterProductOptions(Elements itemOptions) {
 //		System.out.println("******** NEXT - OPTION ELEMENTS ********");
 		itemOptions.forEach(option -> {
 			String optionName = option.attr("data-name");
@@ -75,41 +72,38 @@ public class ShopifyCrawler extends EcommCrawler {
 		});
 	}
 
-	protected void filterProductImages(@NotNull Elements productImages) {
-//		System.out.println("******** NEXT - IMAGE ELEMENTS ********");
-		for (Element element : productImages) {
-			String ele = element.attr("src");
-			if (ele.isEmpty()) continue;
-//			System.out.println(ele);
-			getProduct().getProductImages().add(ele);
-		}
-	}
-
 	protected void filterProductBasicInfo() {
-		Elements itemProperties = page.getElementsByAttribute("itemprop");
-//		System.out.println("******** FIRST - ITEM-PROPERTIES ELEMENTS ********");
-		if (!itemProperties.isEmpty()) {
-			itemProperties.forEach(element -> {
-				String ele = element.attr("itemprop");
-				String value = element.text().replace("\"", "");
-				if (ele.equalsIgnoreCase("name") && !value.isEmpty()) getProduct().setProductName(value);
-				if (ele.equalsIgnoreCase("price") && !value.isEmpty()) getProduct().setProductPriceBase(Double.parseDouble(value.replaceAll("[^\\d.]", "")));
-				if (ele.equalsIgnoreCase("description") && !value.isEmpty()) getProduct().setProductDescription(value);
-				if (ele.equalsIgnoreCase("image") && !value.isEmpty()) getProduct().setProductDescription(value); // ?? do I NEED this
-			});
-		} else {
-			getProduct().setProductName(page.select("h1.single-product-title").text());
-			System.out.println(page.select("div.single-product-price"));
-			String priceLine = page.select("div.single-product-price").text().replaceAll("[^\\d.]", "");
-			double price;
-			try {
-				price = Double.parseDouble(priceLine);
-			} catch (NumberFormatException e) {
-				price = Double.parseDouble(priceLine.substring(0, priceLine.indexOf(".") + 3));
-			}
-			getProduct().setProductPriceBase(Double.parseDouble(decimalFormat.format(price)));
-			getProduct().setProductDescription(page.select("div.single-product-description ").text());
-		}
+		String title = page.select("h1.product-single__title").text();
+		getProduct().setProductName(title);
+		checkForSale();
+		getProduct().setProductDescription(page.select("div.product-single__description").text());
 	}
 
+	private void checkForSale() {
+//		System.out.println("<-|-> SHOPIFY <-|-> \uD83D\uDCB0 <-|->");
+		boolean onSale = false;
+		String saleTag = page.select("div.product-tag").text().toLowerCase().trim();
+		if (saleTag.contains("sale")) onSale = true;
+		System.out.println("Product Sale: <-|-> " + onSale);
+		getProduct().setOnSale(onSale);
+		scrapePrice();
+	}
+
+	private void scrapePrice() {
+		String price;
+		if (getProduct().isOnSale()) {
+			price = page.select("s.product-single__price.product-single__price--compare").text();
+			String salePrice = page.select("span.product-single__price").attr("content");
+//			System.out.println(cleanPrice(salePrice));
+
+			getProduct().setProductPriceBase(price.isEmpty() ? formatPrice(cleanPrice(salePrice)) : formatPrice(cleanPrice(price)));
+
+			getProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));
+			getProduct().setWhatYouSave((getProduct().getProductPriceBase() - getProduct().getListedPrice()));
+		} else {
+			price = page.select("div.single-product-price").attr("data-price");
+			getProduct().setProductPriceBase(formatPrice(cleanPrice(price)));
+		}
+//		System.out.println(cleanPrice(price));
+	}
 }

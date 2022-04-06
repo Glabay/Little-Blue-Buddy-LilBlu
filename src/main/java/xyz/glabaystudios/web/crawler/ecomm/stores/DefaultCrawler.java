@@ -1,6 +1,5 @@
 package xyz.glabaystudios.web.crawler.ecomm.stores;
 
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
 
@@ -18,47 +17,48 @@ public class DefaultCrawler extends EcommCrawler {
 	@Override
 	public void crawlThePageForContent() {
 		if (page == null) return;
-		Elements itemProps =        page.getElementsByAttribute("itemprop");
-		Elements productImages =    page.select("img");
-		Elements productOption =    page.select("select.single-option-selector");
-		Elements productMisc =      page.select("select.product-form__variants option");
+		Elements productOption =    page.select("div.product-option-group.form-group");
 
 		filterProductBasicInfo();
-		filterProductImages(productImages);
+		addImages(page.select("div.images-wrapper img"));
 		filterProductOptions(productOption);
-		filterProductsForPriceAdjustments(productMisc);
+		filterProductsForPriceAdjustments();
 	}
 
-	protected void filterProductsForPriceAdjustments(Elements extras) {
-//		System.out.println("******** NEXT - MISC ELEMENTS ********");
-		List<String> list = new ArrayList<>();
-		extras.forEach(misc -> list.add(misc.text()));
-		Collections.sort(list);
-		filterOverProducts(list);
+	protected void filterProductsForPriceAdjustments() {
+		String oneLiner = page.select("form.form-vertical script").toString()
+				.split("= \\{")[1]
+				.replace("</script>", "")
+				.replace("} || {};", "")
+				.trim();
+//		System.out.println(oneLiner);
+		List<String> options = List.of(oneLiner.split("},"));
+//		Collections.sort(options);
+		filterOverProducts(options);
 	}
 
 	protected void filterOverProducts(List<String> list) {
 		// for each option of the product
-		AtomicInteger i = new AtomicInteger();
+		AtomicInteger i = new AtomicInteger(0);
 		for (String key : getProduct().getProductOptions().keySet()) {//collect the available choices for this option
 			List<String> option = getProduct().getProductOptions().get(key);
 //			System.out.println(key);
 			// new lst to store the formatted choices with adjusted prices
 			List<String> optionChoices = new ArrayList<>();
-			// for each choice
+//			System.out.println("<-|-> " + list);
 			for (String opt : option) {
-				// listing ex: "2 inch / 22 inch - $81.95 USD"
-//				System.out.println(list.get(Math.min(i.get(), list.size()-1)));
-				String[] listingSplit = list.get(Math.min(i.getAndIncrement(), list.size()-1)).split("-");
-				String priceStr = listingSplit[1].replaceAll("[^\\d.]", ""); // remove non-numbers
-				double adjustedPrice = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr);// parse the price
-				double adjustment = (adjustedPrice - getProduct().getProductPriceBase());
-				String formatted = String.format("%s %s %s", opt, (adjustment > 0.0 ? "+" : "-"), priceStr.isEmpty() ? "Sold-Out" : ("$" + decimalFormat.format(adjustment)));
-				optionChoices.add(formatted);
+				System.out.println(opt);
+				if (opt.startsWith("-- ")) continue;
+				System.out.println(list.get(Math.min(i.get(), list.size()-1)));
+				String prodPrice = list.get(Math.min(i.get(), list.size()-1)).split(",")[2];
+				double finalPrice = (formatPrice(cleanPrice(prodPrice)) - getProduct().getProductPriceBase());
+				String formatted = String.format("%s %s %s", opt, (finalPrice > 0.0 ? "+" : "-"), ("$" + decimalFormat.format(finalPrice)));
+
 //				System.out.println(formatted);
+				optionChoices.add(formatted);
+				i.getAndIncrement();
 			}
 			getProduct().getProductOptionPriceAdjustments().put(key, optionChoices);
-//			System.out.println("OPTION " + index.getAndIncrement() + " | END");
 		}
 	}
 
@@ -66,55 +66,48 @@ public class DefaultCrawler extends EcommCrawler {
 //		System.out.println("******** NEXT - OPTION ELEMENTS ********");
 		itemOptions.forEach(option -> {
 			String optionName = option.attr("data-name");
+//			System.out.println("Product OptionName: <-|-> " + optionName);
 			List<String> optionChoices = new ArrayList<>();
-			Elements choices = option.select("select.single-option-selector option");
-
+			Elements choices = option.select("select.product-option-select option");
+//			System.out.println("Product Options: <-|-> " + choices);
+			if (choices.isEmpty()) {
+				choices = option.select("select.list-option-select option");
+//				System.out.println("Product Options-two: <-|-> " + choices);
+			}
 			choices.forEach(choice -> optionChoices.add(choice.text()));
 			Collections.sort(optionChoices);
 			getProduct().getProductOptions().put(optionName, optionChoices);
 		});
 	}
 
-	protected void filterProductImages(Elements productImages) {
-//		System.out.println("******** NEXT - IMAGE ELEMENTS ********");
-		for (Element element : productImages) {
-			String ele = element.attr("src");
-			if (ele.isEmpty()) continue;
-//			System.out.println(ele);
-			getProduct().getProductImages().add(ele);
-		}
-	}
-
 	protected void filterProductBasicInfo() {
-		Elements itemProperties = page.getElementsByAttribute("itemprop");
-//		System.out.println("******** FIRST - ITEM-PROPERTIES ELEMENTS ********");
-		if (!itemProperties.isEmpty()) {
-			itemProperties.forEach(element -> {
-				String ele = element.attr("itemprop");
-				String value = element.text().replace("\"", "");
-				if (ele.equalsIgnoreCase("name") && !value.isEmpty()) getProduct().setProductName(value);
-				if (ele.equalsIgnoreCase("price") && !value.isEmpty()) getProduct().setProductPriceBase(Double.parseDouble(value.replaceAll("[^\\d.]", "")));
-				if (ele.equalsIgnoreCase("description") && !value.isEmpty()) getProduct().setProductDescription(value);
-			});
-			if (getProduct().getProductName() == null) {
-				getProduct().setProductName(page.select("h1.product-single__title").text());
-			}
-			if (getProduct().getProductPriceBase() == 0.00) {
-				getProduct().setProductPriceBase(Double.parseDouble(page.select("span.product__price").text().replaceAll("[^\\d.]", "")));
-			}
-		} else {
-			getProduct().setProductName(page.select("h1.single-product-title").text());
-			System.out.println(page.select("div.single-product-price"));
-			String priceLine = page.select("div.single-product-price").text().replaceAll("[^\\d.]", "");
-			double price;
-			try {
-				price = Double.parseDouble(priceLine);
-			} catch (NumberFormatException e) {
-				price = Double.parseDouble(priceLine.substring(0, priceLine.indexOf(".") + 3));
-			}
-			getProduct().setProductPriceBase(Double.parseDouble(decimalFormat.format(price)));
-			getProduct().setProductDescription(page.select("div.single-product-description ").text());
-		}
+		String title = page.select("h1.single-product-title").text();
+//		System.out.println("Product Title: <-|-> " + title);
+		getProduct().setProductName(title);
+
+		checkForSale();
+		getProduct().setProductDescription(page.select("div.single-product-description ").text());
 	}
 
+	private void checkForSale() {
+//		System.out.println("<-|-> \uD83D\uDCB0 <-|->");
+		String saleString = page.select("div.single-product-price").attr("data-on-sale");
+		boolean onSale = false;
+		if (!saleString.isEmpty() || !saleString.isBlank()) onSale = Boolean.parseBoolean(saleString);
+//		System.out.println("Product Sale: <-|-> " + onSale);
+		getProduct().setOnSale(onSale);
+		scrapePrice();
+	}
+
+	private void scrapePrice() {
+		String price = page.select("div.single-product-price").attr("data-price");
+		getProduct().setProductPriceBase(formatPrice(cleanPrice(price)));
+		if (getProduct().isOnSale()) {
+			String salePrice = page.select("div.single-product-price").attr("data-price-sale");
+
+			getProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));
+			getProduct().setWhatYouSave((getProduct().getProductPriceBase() - getProduct().getListedPrice()));
+		}
+//		System.out.println(getProduct().getProductPriceBase());
+	}
 }
