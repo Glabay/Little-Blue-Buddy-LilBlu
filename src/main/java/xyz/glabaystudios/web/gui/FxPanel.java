@@ -53,8 +53,6 @@ public class FxPanel implements Initializable {
 
 	@Getter Whois result;
 
-	Alert dnsInfo = new Alert(Alert.AlertType.INFORMATION);
-
 	private final Stop[] stops = new Stop[] {
 			new Stop(0, Color.web("#EF7832")),
 			new Stop(1, Color.web("#FFE6A7"))
@@ -106,6 +104,8 @@ public class FxPanel implements Initializable {
 	public void executeWhoisLookup() {
 		String domain = domainField.getText();
 		if (domain.isEmpty()) return;
+		Alert dnsInfo = new Alert(Alert.AlertType.INFORMATION);
+		dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
 		WhoisLookup lookup = new WhoisLookup(domain);
 		lookup.filterDumpedData();
 		resetEverything();
@@ -126,7 +126,6 @@ public class FxPanel implements Initializable {
 				if (mxLabel.isUnderline()) {
 					StringBuilder message = new StringBuilder();
 					lookup.getResult().getMailServers().forEach(mailServer -> message.append(mailServer).append("\n"));
-					dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
 					dnsInfo.setTitle("Mail Exchange Servers.");
 					dnsInfo.setHeaderText("Mail server for " + lookup.getResult().getDomainName());
 					setMessageAndShow(dnsInfo, message);
@@ -155,7 +154,6 @@ public class FxPanel implements Initializable {
 					lookup.getResult().getNameServers().forEach(nameServer -> message.append(nameServer).append("\n"));
 					dnsInfo.setTitle("Name Server List.");
 					dnsInfo.setHeaderText("Name Servers for " + lookup.getResult().getDomainName());
-					dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
 					setMessageAndShow(dnsInfo, message);
 				}
 			});

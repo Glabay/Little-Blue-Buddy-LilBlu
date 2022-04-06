@@ -110,6 +110,10 @@ public class CallbackWindow implements Initializable {
 			missingFields.setContentText("What can you tell us about your second rebuttal?");
 			return false;
 		}
+		if (timezoneComboBox.isDisable() || timezoneComboBox.getSelectionModel().isEmpty() || timezoneComboBox.getSelectionModel().getSelectedIndex() == 0) {
+			missingFields.setContentText("What is the timezone of the callback?");
+			return false;
+		}
 		return true;
 	}
 
