@@ -15,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
+import xyz.glabaystudios.web.LilBlu;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
 
 import java.awt.*;
@@ -85,6 +86,7 @@ public class EcomRipper implements Initializable {
 	private void loadImages(ArrayList<String> images) {
 		imageView.setImage(new Image(formatProductImageLink(images.get(0))));
 		if (images.size() > 1) imageView2.setImage(new Image(formatProductImageLink(images.get(images.size() - 1))));
+		else imageView2.setImage(new Image(String.valueOf(LilBlu.class.getResource("newfold-logo-icon.png"))));
 	}
 
 	private String formatProductImageLink(String input) {
