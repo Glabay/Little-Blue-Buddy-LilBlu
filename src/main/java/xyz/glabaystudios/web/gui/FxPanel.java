@@ -3,6 +3,7 @@ package xyz.glabaystudios.web.gui;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -63,7 +64,6 @@ public class FxPanel implements Initializable {
 		LinearGradient lngnt = new LinearGradient(1, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
 		dnsSquare.setFill(lngnt);
 	}
-
 
 	public void resetEverything() {
 		callTypeLabel.setTextFill(Paint.valueOf("BLACK"));
@@ -171,82 +171,38 @@ public class FxPanel implements Initializable {
 	}
 
 	public void requestTemplateWindowException() {
-		Scene popup = null;
-		try {
-			popup = new Scene(Controllers.getCiscoCodeExceptionWindow());
-		} catch (IllegalArgumentException e) {
-			NetworkExceptionHandler.handleException("Trying to open a second window: requestTemplateWindowException", e);
+		Scene scene = setupTheScene(Controllers.getCiscoCodeExceptionWindow());
+		if (scene != null) {
+			Stage stage = setTheStage(scene, "Exception E-mailer");
+			stage.setOnCloseRequest(windowEvent -> Controllers.removeCiscoCodeExceptionWindow());
+			stage.show();
 		}
-		if (popup != null) {
-			Stage ciscoCodeException = new Stage();
-			ciscoCodeException.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-			ciscoCodeException.setResizable(false);
-			ciscoCodeException.setAlwaysOnTop(true);
-			ciscoCodeException.setTitle("Exception E-mailer");
-			ciscoCodeException.setScene(popup);
-			ciscoCodeException.setOnCloseRequest(windowEvent -> Controllers.removeCiscoCodeExceptionWindow());
-			ciscoCodeException.show();
-			ciscoCodeException.setOnShown(windowEvent -> ciscoCodeException.toFront());
-		} // else we already have an exception open and in progress.
 	}
 
 	public void requestTemplateWindowFollowUp() {
-		Scene popup = null;
-		try {
-			popup = new Scene(Controllers.getFollowUpWindow());
-		} catch (IllegalArgumentException e) {
-			NetworkExceptionHandler.handleException("Trying to open a second window: requestTemplateWindowFollowUp", e);
-		}
-		if (popup != null) {
-			Stage followUp = new Stage();
-			followUp.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-			followUp.setResizable(false);
-			followUp.setAlwaysOnTop(true);
-			followUp.setTitle("Follow up Template");
-			followUp.setScene(popup);
-			followUp.setOnCloseRequest(windowEvent -> Controllers.removeFollowUpWindow());
-			followUp.show();
-			followUp.setOnShown(windowEvent -> followUp.toFront());
+		Scene scene = setupTheScene(Controllers.getFollowUpWindow());
+		if (scene != null) {
+			Stage stage = setTheStage(scene, "Follow up Template");
+			stage.setOnCloseRequest(windowEvent -> Controllers.removeFollowUpWindow());
+			stage.show();
 		}
 	}
 
 	public void requestTemplateWindowMissedEvent() {
-		Scene popup = null;
-		try {
-			popup = new Scene(Controllers.getMissedEventWindow());
-		} catch (IllegalArgumentException e) {
-			NetworkExceptionHandler.handleException("Trying to open a second window: requestTemplateWindowMissedEvent", e);
-		}
-		if (popup != null) {
-			Stage eventWindow = new Stage();
-			eventWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-			eventWindow.setResizable(false);
-			eventWindow.setAlwaysOnTop(true);
-			eventWindow.setTitle("Missed/Late Event");
-			eventWindow.setScene(popup);
-			eventWindow.setOnCloseRequest(windowEvent -> Controllers.removeMissedEventWindow());
-			eventWindow.show();
-			eventWindow.setOnShown(event -> eventWindow.toFront());
+		Scene scene = setupTheScene(Controllers.getMissedEventWindow());
+		if (scene != null) {
+			Stage stage = setTheStage(scene, "Missed/Late Event");
+			stage.setOnCloseRequest(windowEvent -> Controllers.removeMissedEventWindow());
+			stage.show();
 		}
 	}
 
 	public void requestTemplateWindowScheduleCallback() {
-		Scene popup = null;
-		try {
-			popup = new Scene(Controllers.getCallbackWindow());
-		} catch (IllegalArgumentException e) {
-			NetworkExceptionHandler.handleException("Trying to open a second window: requestTemplateWindowScheduleCallback", e);
-		}
-		if (popup != null) {
-			Stage eventWindow = new Stage();
-			eventWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-			eventWindow.setResizable(false);
-			eventWindow.setAlwaysOnTop(true);
-			eventWindow.setTitle("Scheduled Callback");
-			eventWindow.setScene(popup);
-			eventWindow.setOnCloseRequest(windowEvent -> Controllers.removeCallbackWindow());
-			eventWindow.show();
-			eventWindow.setOnShown(event -> eventWindow.toFront());
+		Scene scene = setupTheScene(Controllers.getCallbackWindow());
+		if (scene != null) {
+			Stage stage = setTheStage(scene, "Scheduled Callback");
+			stage.setOnCloseRequest(windowEvent -> Controllers.removeCallbackWindow());
+			stage.show();
 		}
 	}
 
@@ -288,42 +244,42 @@ public class FxPanel implements Initializable {
 	}
 
 	public void prepTheHounds() {
-		Scene docuHoundScene = null;
-		try {
-			docuHoundScene = new Scene(Controllers.getDocuHoundWindow());
-		} catch (IllegalArgumentException e) {
-			NetworkExceptionHandler.handleException("Trying to open a second window: prepTheHounds", e);
-		}
-		if (docuHoundScene != null) {
-			Stage docuPound = new Stage();
-			docuPound.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-			docuPound.setResizable(false);
-			docuPound.setTitle("Document DocumentHound");
-			docuPound.setScene(docuHoundScene);
-			docuPound.setOnCloseRequest(windowEvent -> Controllers.removeDocuHoundWindow());
-			docuPound.show();
-			docuPound.requestFocus();
+		Scene scene = setupTheScene(Controllers.getDocuHoundWindow());
+		if (scene != null) {
+			Stage stage = setTheStage(scene, "Document DocumentHound");
+			stage.setOnCloseRequest(windowEvent -> Controllers.removeDocuHoundWindow());
+			stage.show();
 		}
 	}
 
 	public void openEcommRipper() {
-		Scene ripper = null;
+		Scene scene = setupTheScene(Controllers.getEcommRipperWindow());
+		if (scene != null) {
+			Stage stage = setTheStage(scene, "Store Ripper");
+			stage.setOnCloseRequest(windowEvent -> Controllers.removeEcommRipper());
+			stage.show();
+		}
+	}
+
+	private Scene setupTheScene(Parent parent) {
+		Scene scene = null;
 		try {
-			ripper = new Scene(Controllers.getEcommRipperWindow());
+			scene = new Scene(parent);
 		} catch (IllegalArgumentException e) {
-			NetworkExceptionHandler.handleException("Trying to open a second window: requestAboutWindow", e);
+			NetworkExceptionHandler.handleException("Trying to open a second window: setupTheScene ->" + parent.toString(), e);
 		}
-		if (ripper != null) {
-			Stage ecomRipperWindow = new Stage();
-			ecomRipperWindow.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-			ecomRipperWindow.setResizable(false);
-			ecomRipperWindow.setAlwaysOnTop(true);
-			ecomRipperWindow.setTitle("Store Ripper");
-			ecomRipperWindow.setScene(ripper);
-			ecomRipperWindow.setOnCloseRequest(windowEvent -> Controllers.removeEcommRipper());
-			ecomRipperWindow.show();
-			ecomRipperWindow.setOnShown(windowEvent -> ecomRipperWindow.toFront());
-		}
+		return scene;
+	}
+
+	private Stage setTheStage(Scene scene, String windowTitle) {
+		Stage stage = new Stage();
+		stage.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
+		stage.setResizable(false);
+		stage.setAlwaysOnTop(true);
+		stage.setTitle(windowTitle);
+		stage.setScene(scene);
+		stage.setOnShown(windowEvent -> stage.toFront());
+		return stage;
 	}
 
 	public static void openWebpage(URI uri) {
