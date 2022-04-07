@@ -32,10 +32,14 @@ public class DocuHoundWindow {
 	ExecutorService executorService;
 	Map<String, String> foundDocuments = new HashMap<>();
 
-	Alert domainAlert = new Alert(AlertType.WARNING,  "You must provide a place for the hounds to search<br>Please provide a Domain.", ButtonType.CLOSE, ButtonType.OK);
-	Alert unknownDocument = new Alert(AlertType.CONFIRMATION,  "What documents are you hunting?.", ButtonType.CLOSE, ButtonType.OK);
 
 	public void prepareThePackForTheHunt() {
+		Alert domainAlert = new Alert(AlertType.WARNING,  "You must provide a place for the hounds to search<br>Please provide a Domain.", ButtonType.CLOSE, ButtonType.OK);
+		Alert unknownDocument = new Alert(AlertType.CONFIRMATION,  "What documents are you hunting?.", ButtonType.CLOSE, ButtonType.OK);
+
+		domainAlert.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
+		unknownDocument.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
+
 		if (domainField.getText().isEmpty()) {
 			domainAlert.show();
 			return;
@@ -126,7 +130,8 @@ public class DocuHoundWindow {
 	public void saveDocuments() {
 		System.out.println("Time to Save the Documents...");
 		saveDocsBtn.setDisable(true);
-		new Alert(AlertType.INFORMATION, "Downloading documents...\nYou can close this popup").show();
+		Alert alert = new Alert(AlertType.INFORMATION, "Downloading documents...\nYou can close this popup");
+		alert.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
 		Downloader docuDownloader;
 		int split = 16;
 		int houndsNeeded = foundDocuments.size() / split;
@@ -158,6 +163,6 @@ public class DocuHoundWindow {
 			docuDownloader.passDocumentList((HashMap<String, String>) foundDocuments);
 			docuDownloader.start();
 		}
-
+		alert.show();
 	}
 }
