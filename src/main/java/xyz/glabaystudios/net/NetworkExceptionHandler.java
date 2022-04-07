@@ -1,9 +1,5 @@
 package xyz.glabaystudios.net;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,15 +15,7 @@ public class NetworkExceptionHandler {
 			System.out.println("Error message was null.");
 			return;
 		}
-
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.enable(SerializationFeature.INDENT_OUTPUT);
-		mapper.writerWithDefaultPrettyPrinter();
-		try {
-			String errorJson = mapper.writeValueAsString(thrownException);
-			System.out.println(errorJson);
-//			prepareHttpRequest(errorJson);
-		} catch (JsonProcessingException ignored) {}
+		thrownException.printStackTrace();
 	}
 
 	private static final HttpClient httpClient = HttpClient.newBuilder()
@@ -35,6 +23,13 @@ public class NetworkExceptionHandler {
 			.connectTimeout(Duration.ofSeconds(10))
 			.build();
 
+	/**
+	 * Sending an exception to the GlabayStudios Network for Exception logging
+	 * Exceptions sent are logged for future improvements and bug fixes,
+	 * so the end-user doesn't have to submit the error report as they are sent instead of printed to a console
+	 *
+	 * @param json The JSON body to post to the ExceptionServer
+	 */
 	private static void prepareHttpRequest(String json) {
 		System.out.println("HTTP POST\n" + json);
 		HttpRequest request = HttpRequest.newBuilder()
