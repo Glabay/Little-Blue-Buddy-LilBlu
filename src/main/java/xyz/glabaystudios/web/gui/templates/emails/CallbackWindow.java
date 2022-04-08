@@ -11,13 +11,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import xyz.glabaystudios.smtp.ExceptionEmail;
 import xyz.glabaystudios.smtp.Recipients;
-import xyz.glabaystudios.util.TimeZoneWrapper;
+import xyz.glabaystudios.util.Zones;
 import xyz.glabaystudios.web.Controllers;
 import xyz.glabaystudios.web.model.exceptions.ScheduledCallback;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -44,7 +45,6 @@ public class CallbackWindow implements Initializable {
 	@FXML public TextField callbackLeftOffAtField;
 	@FXML public ComboBox<String> timezoneComboBox;
 	@FXML public TextArea callbackDetailedReasonArea;
-	@FXML public TextField countryCodeField;
 
 	Alert missingFields;
 
@@ -55,17 +55,21 @@ public class CallbackWindow implements Initializable {
 		callbackTimeMin.setValueFactory(getSpinner(0, 59));
 		callbackTimeHr.getEditor().setText("");
 		callbackTimeMin.getEditor().setText("");
-		timezoneComboBox.setDisable(true);
+		timezoneComboBox.setItems(getTimeZoneList());
+		timezoneComboBox.getSelectionModel().select(0);
 		callbackDetailedReasonArea.setWrapText(true);
 		rebuttalReasonOne.setWrapText(true);
 		rebuttalReasonTwo.setWrapText(true);
 	}
 
 	@FXML
-	public ObservableList<String> getTimeZoneList(String countryCode) {
+	public ObservableList<String> getTimeZoneList() {
 		List<String> timezones = new ArrayList<>();
-		timezones.add("Select Customers Timezone");
-		timezones.addAll(TimeZoneWrapper.getWrapper().getTimeZonePhoneBook(countryCode));
+		final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+		timezones.add("Select time zone");
+		for (Zones zones : Zones.values()) {
+			timezones.add(zones.getZoneName() + " " + decimalFormat.format(zones.getOffset()).replace(".", ":"));
+		}
 		return FXCollections.observableArrayList(timezones);
 	}
 
@@ -110,10 +114,6 @@ public class CallbackWindow implements Initializable {
 			missingFields.setContentText("What can you tell us about your second rebuttal?");
 			return false;
 		}
-		if (timezoneComboBox.isDisable() || timezoneComboBox.getSelectionModel().isEmpty() || timezoneComboBox.getSelectionModel().getSelectedIndex() == 0) {
-			missingFields.setContentText("What is the timezone of the callback?");
-			return false;
-		}
 		return true;
 	}
 
@@ -150,9 +150,25 @@ public class CallbackWindow implements Initializable {
 	}
 
 	private String getTime() {
+		String timezone = timezoneComboBox.getSelectionModel().getSelectedItem().replaceAll("\\d","").replace("-", "").replace(":", "").trim();
 		int min = Integer.parseInt(callbackTimeMin.getEditor().getText());
 		String minuet = (min < 10) ? "0" + min : String.valueOf(min);
-		return callbackTimeHr.getEditor().getText() + ":" + minuet + " " + callbackMeridianBtn.getText();
+		double tempTime = Double.parseDouble(callbackTimeHr.getEditor().getText() + "." + minuet);
+		double localOffset = -4.0;
+		for (Zones zones : Zones.values()) {
+			if (zones.getZoneName().equals(timezone)) {
+				final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+				double base = (localOffset - zones.getOffset());
+				double time = (tempTime + base);
+				boolean meridian = callbackMeridianBtn.isSelected();
+				if (time < 0) {
+					meridian = !meridian;
+					time = Math.abs(time);
+				}
+				return String.valueOf(decimalFormat.format(time)).replace(".", ":") + " " + (meridian ? "PM" : "AM");
+			}
+		}
+		return "";
 	}
 
 	private ScheduledCallback getScheduledCallback() {
@@ -162,7 +178,6 @@ public class CallbackWindow implements Initializable {
 		callback.setInterview(caseField.getText());
 		callback.setDate(callbackDateField.getText());
 		callback.setCallbackTime(getTime());
-		callback.setTimezone(timezoneComboBox.getSelectionModel().getSelectedItem().split("\\|")[1].trim());
 		callback.setCallbackReason(callbackDetailedReasonArea.getText());
 		callback.setLeftOffAt(callbackLeftOffAtField.getText());
 		callback.setRebuttalOne(rebuttalReasonOne.getText());
@@ -171,24 +186,5 @@ public class CallbackWindow implements Initializable {
 		callback.setRebuttalTwoTime(rebuttalTimeframeTwoField.getText());
 
 		return callback;
-	}
-
-	public void handleCountryLookup() {
-		countryCodeField.setText(countryCodeField.getText().replaceAll("[^\\D]", "").toUpperCase());
-		countryCodeField.positionCaret(countryCodeField.getText().length());
-		if (countryCodeField.getText().length() >= 3) {
-			countryCodeField.setText(countryCodeField.getText().substring(0, 2));
-			countryCodeField.positionCaret(countryCodeField.getText().length());
-		}
-		String countryCode = countryCodeField.getText().trim();
-		if (countryCode.length() == 2) {
-			System.out.println(countryCode);
-			timezoneComboBox.setItems(getTimeZoneList(countryCode.toUpperCase()));
-			timezoneComboBox.getSelectionModel().select(0);
-			timezoneComboBox.setDisable(false);
-		} else if (countryCode.length() < 2 && !timezoneComboBox.isDisable()) {
-			timezoneComboBox.setDisable(true);
-			timezoneComboBox.getItems().clear();
-		}
 	}
 }
