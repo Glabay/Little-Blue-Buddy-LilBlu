@@ -17,8 +17,8 @@ public class DefaultCrawler extends EcommCrawler {
 	@Override
 	public void crawlThePageForContent() {
 		if (page == null) return;
+		System.out.println("<-|-> DEFAULT <-|->");
 		Elements productOption =    page.select("div.product-option-group.form-group");
-
 		filterProductBasicInfo();
 		addImages(page.select("div.images-wrapper img"));
 		filterProductOptions(productOption);
@@ -40,8 +40,8 @@ public class DefaultCrawler extends EcommCrawler {
 	protected void filterOverProducts(List<String> list) {
 		// for each option of the product
 		AtomicInteger i = new AtomicInteger(0);
-		for (String key : getProduct().getProductOptions().keySet()) {//collect the available choices for this option
-			List<String> option = getProduct().getProductOptions().get(key);
+		for (String key : this.getPegaProduct().getProductOptions().keySet()) {//collect the available choices for this option
+			List<String> option = this.getPegaProduct().getProductOptions().get(key);
 //			System.out.println(key);
 			// new lst to store the formatted choices with adjusted prices
 			List<String> optionChoices = new ArrayList<>();
@@ -51,14 +51,14 @@ public class DefaultCrawler extends EcommCrawler {
 				if (opt.startsWith("-- ")) continue;
 				System.out.println(list.get(Math.min(i.get(), list.size()-1)));
 				String prodPrice = list.get(Math.min(i.get(), list.size()-1)).split(",")[2];
-				double finalPrice = (formatPrice(cleanPrice(prodPrice)) - getProduct().getProductPriceBase());
+				double finalPrice = (formatPrice(cleanPrice(prodPrice)) - this.getPegaProduct().getProductPriceBase());
 				String formatted = String.format("%s %s %s", opt, (finalPrice > 0.0 ? "+" : "-"), ("$" + decimalFormat.format(finalPrice)));
 
 //				System.out.println(formatted);
 				optionChoices.add(formatted);
 				i.getAndIncrement();
 			}
-			getProduct().getProductOptionPriceAdjustments().put(key, optionChoices);
+			this.getPegaProduct().getProductOptionPriceAdjustments().put(key, optionChoices);
 		}
 	}
 
@@ -76,17 +76,17 @@ public class DefaultCrawler extends EcommCrawler {
 			}
 			choices.forEach(choice -> optionChoices.add(choice.text()));
 			Collections.sort(optionChoices);
-			getProduct().getProductOptions().put(optionName, optionChoices);
+			this.getPegaProduct().getProductOptions().put(optionName, optionChoices);
 		});
 	}
 
 	protected void filterProductBasicInfo() {
 		String title = page.select("h1.single-product-title").text();
 //		System.out.println("Product Title: <-|-> " + title);
-		getProduct().setProductName(title);
+		this.getPegaProduct().setProductName(title);
 
 		checkForSale();
-		getProduct().setProductDescription(page.select("div.single-product-description ").text());
+		this.getPegaProduct().setProductDescription(page.select("div.single-product-description ").text());
 	}
 
 	private void checkForSale() {
@@ -95,18 +95,18 @@ public class DefaultCrawler extends EcommCrawler {
 		boolean onSale = false;
 		if (!saleString.isEmpty() || !saleString.isBlank()) onSale = Boolean.parseBoolean(saleString);
 //		System.out.println("Product Sale: <-|-> " + onSale);
-		getProduct().setOnSale(onSale);
+		this.getPegaProduct().setOnSale(onSale);
 		scrapePrice();
 	}
 
 	private void scrapePrice() {
 		String price = page.select("div.single-product-price").attr("data-price");
-		getProduct().setProductPriceBase(formatPrice(cleanPrice(price)));
-		if (getProduct().isOnSale()) {
+		this.getPegaProduct().setProductPriceBase(formatPrice(cleanPrice(price)));
+		if (this.getPegaProduct().isOnSale()) {
 			String salePrice = page.select("div.single-product-price").attr("data-price-sale");
 
-			getProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));
-			getProduct().setWhatYouSave((getProduct().getProductPriceBase() - getProduct().getListedPrice()));
+			this.getPegaProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));
+			this.getPegaProduct().setWhatYouSave((this.getPegaProduct().getProductPriceBase() - this.getPegaProduct().getListedPrice()));
 		}
 //		System.out.println(getProduct().getProductPriceBase());
 	}

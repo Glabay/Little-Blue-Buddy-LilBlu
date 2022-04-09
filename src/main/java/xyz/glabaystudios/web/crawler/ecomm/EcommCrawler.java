@@ -9,7 +9,7 @@ import xyz.glabaystudios.web.crawler.ecomm.stores.AmazonCrawler;
 import xyz.glabaystudios.web.crawler.ecomm.stores.DefaultCrawler;
 import xyz.glabaystudios.web.crawler.ecomm.stores.EtsyCrawler;
 import xyz.glabaystudios.web.crawler.ecomm.stores.ShopifyCrawler;
-import xyz.glabaystudios.web.model.ecomm.Product;
+import xyz.glabaystudios.web.model.ecomm.PegaProduct;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -17,7 +17,7 @@ import java.text.DecimalFormat;
 public abstract class EcommCrawler extends Crawler {
 
 	@Getter
-	protected final Product product = new Product();
+	protected final PegaProduct pegaProduct = new PegaProduct();
 	protected final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 
 	public EcommCrawler(String domain) {
@@ -68,11 +68,11 @@ public abstract class EcommCrawler extends Crawler {
 	}
 
 	/**
-	 * Taking in a collection of {@link Elements}, we will filter over the empty ones and add the image links to the {@link Product}
+	 * Taking in a collection of {@link Elements}, we will filter over the empty ones and add the image links to the {@link PegaProduct}
 	 * @param elements the Elements to filter
 	 */
 	protected void addImages(Elements elements) {
-		elements.stream().map(element -> element.attr("src")).filter(ele -> !ele.isEmpty()).forEach(ele -> getProduct().getProductImages().add(ele));
+		elements.stream().map(element -> element.attr("src")).filter(ele -> !ele.isEmpty()).forEach(ele -> this.getPegaProduct().getProductImages().add(ele));
 	}
 
 }

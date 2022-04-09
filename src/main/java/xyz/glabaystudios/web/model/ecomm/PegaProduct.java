@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @ToString
-public class Product {
+public class PegaProduct {
 
 	private String productName;
 	private double productPriceBase;
@@ -29,7 +29,7 @@ public class Product {
 	private final ArrayList<String> productImages = new ArrayList<>();
 
 
-	public Product() {
+	public PegaProduct() {
 		productOptions = new HashMap<>();
 		productOptionPriceAdjustments = new HashMap<>();
 	}

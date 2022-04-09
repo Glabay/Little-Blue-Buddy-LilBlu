@@ -55,14 +55,14 @@ public class EcomRipper implements Initializable {
 		ecommCrawler.crawlThePageForContent();
 
 		getProductNameField().setAlignment(Pos.CENTER_LEFT);
-		getProductNameField().setText(ecommCrawler.getProduct().getProductName().trim());
-		getBasePriceField().setText(String.valueOf(ecommCrawler.getProduct().getProductPriceBase()));
-		getProductDescriptionArea().setText(ecommCrawler.getProduct().getProductDescription());
+		getProductNameField().setText(ecommCrawler.getPegaProduct().getProductName().trim());
+		getBasePriceField().setText(String.valueOf(ecommCrawler.getPegaProduct().getProductPriceBase()));
+		getProductDescriptionArea().setText(ecommCrawler.getPegaProduct().getProductDescription());
 
-		loadImages(ecommCrawler.getProduct().getProductImages());
+		loadImages(ecommCrawler.getPegaProduct().getProductImages());
 
-		HashMap<String, List<String>> options = ecommCrawler.getProduct().getProductOptions();
-		HashMap<String, List<String>> optionAdjustments = ecommCrawler.getProduct().getProductOptionPriceAdjustments();
+		HashMap<String, List<String>> options = ecommCrawler.getPegaProduct().getProductOptions();
+		HashMap<String, List<String>> optionAdjustments = ecommCrawler.getPegaProduct().getProductOptionPriceAdjustments();
 		productOptionsBox.getChildren().clear();
 		productOptionsAdjustmentsBox.getChildren().clear();
 		populateOptions(options, productOptionsBox);

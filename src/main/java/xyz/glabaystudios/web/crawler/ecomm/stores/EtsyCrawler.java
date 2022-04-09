@@ -30,13 +30,13 @@ public class EtsyCrawler extends EcommCrawler {
 		Elements optionsAvail = page.select("div.wt-validation select.wt-select__element");
 		for (int index = 0; index < optionNames.size(); index++) {
 			list = filterOverProducts(optionsAvail.get(index).select("select.wt-select__element option").eachText());
-			getProduct().getProductOptions().put(optionNames.get(index), list);
+			this.getPegaProduct().getProductOptions().put(optionNames.get(index), list);
 		}
 
 		//filter the options price adjustments
 		for (int index = 0; index < optionNames.size(); index++) {
 			list = filterProductsForPriceAdjustments(optionsAvail.get(index).select("select.wt-select__element option").eachText());
-			getProduct().getProductOptionPriceAdjustments().put(optionNames.get(index), list);
+			this.getPegaProduct().getProductOptionPriceAdjustments().put(optionNames.get(index), list);
 		}
 	}
 
@@ -49,7 +49,7 @@ public class EtsyCrawler extends EcommCrawler {
 				double adjustedPrice = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr);// parse the price
 				String priceStr2 = page.select("div.wt-mb-xs-3 p.wt-text-slime").text().split("\\(")[0].replaceAll("[^\\d.]", "");
 				boolean sale = !priceStr2.isEmpty();
-				double adjustment = sale ? ((adjustedPrice + Double.parseDouble(priceStr2)) - getProduct().getProductPriceBase()) : (adjustedPrice - getProduct().getProductPriceBase());
+				double adjustment = sale ? ((adjustedPrice + Double.parseDouble(priceStr2)) - this.getPegaProduct().getProductPriceBase()) : (adjustedPrice - this.getPegaProduct().getProductPriceBase());
 				String formatted = String.format("%s %s %s", str.split("\\(")[0].trim(), (adjustment > 0.0 ? "+" : "-"), priceStr.isEmpty() ? "Sold-Out" : ("$" + decimalFormat.format(adjustment)));
 				formattedResult.add(formatted);
 			}
@@ -69,11 +69,11 @@ public class EtsyCrawler extends EcommCrawler {
 
 	protected void filterProductBasicInfo() {
 		String title = page.select("div.cart-col h1.wt-text-body-03.wt-line-height-tight.wt-break-word").text(); // product name
-		getProduct().setProductName(title);
+		this.getPegaProduct().setProductName(title);
 
 		double price = scrapePrice();
-		getProduct().setProductPriceBase(price);
-		getProduct().setProductDescription(page.select("div.listing-info p.wt-text-body-01").eachText().get(0));
+		this.getPegaProduct().setProductPriceBase(price);
+		this.getPegaProduct().setProductDescription(page.select("div.listing-info p.wt-text-body-01").eachText().get(0));
 	}
 
 	private double scrapePrice() {
