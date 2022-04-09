@@ -14,26 +14,22 @@ public class SocialCrawler extends Crawler {
 
 	public SocialCrawler(String domain, boolean usingSecureConnection) {
 		super(domain, usingSecureConnection);
-		socialLinkMap = new HashMap<>();
 		crawlThePageForContent();
 	}
 
 	public void crawlThePageForContent() {
 		if (page == null) return;
+		socialLinkMap = new HashMap<>();
 		Elements links = page.getElementsByAttribute("href");
 
 		links.stream()
 				.map(link -> link.attr("href"))
-				.filter(href -> href.contains("www."))
-				.filter(href -> !href.contains("www.facebook.com/pages"))
+				.filter(href -> href.contains("www.") || href.contains("http"))
 				.filter(href -> href.contains(".com/"))
-				.forEach(href -> {
-					System.out.println(href);
-					checkHref(href);
-				});
+				.forEach(this::checkHref);
 	}
 
-	void checkHref(String href) {
+	private void checkHref(String href) {
 		for (String key : SocialLink.getSocialKeys()) {
 			if (href.toLowerCase().contains(key.toLowerCase())) {
 				String[] socialPlatformAndSocialDisplayName = href.toLowerCase().split(".com");

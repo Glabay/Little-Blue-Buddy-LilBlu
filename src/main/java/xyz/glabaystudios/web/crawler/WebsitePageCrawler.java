@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 public interface WebsitePageCrawler {
 
@@ -13,6 +14,9 @@ public interface WebsitePageCrawler {
 	default Document getContent(String domain, String userAgent, boolean usingSecureConnection) {
 		try {
 			return Jsoup.connect((usingSecureConnection ? "https://" : "http://") + domain).userAgent(userAgent).timeout(42000).get();
+		} catch (UnknownHostException e) {
+			NetworkExceptionHandler.handleException("getContent -> UnknownHost " + domain, e);
+			return null;
 		} catch (IOException e) {
 			NetworkExceptionHandler.handleException("getContent -> InputOutput " + domain, e);
 			return null;
