@@ -1,9 +1,15 @@
 package xyz.glabaystudios.web.crawler.ecomm.stores;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
+import xyz.glabaystudios.web.model.ecomm.ShopifyProduct;
+import xyz.glabaystudios.web.model.ecomm.ShopifyVariant;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,13 +23,64 @@ public class ShopifyCrawler extends EcommCrawler {
 	@Override
 	public void crawlThePageForContent() {
 		if (page == null) return;
-		Elements productOption =    page.select("select.single-option-selector");
-		Elements productMisc =      page.select("select.product-form__variants option");
+		System.out.println(" <-|-> \uD83D\uDCB0 <-|-> SHOPIFY <-|-> \uD83D\uDCB0 <-|->");
+		ShopifyProduct storeProduct = fetchProductScript();
+		if (storeProduct != null) {
+			this.getPegaProduct().setProductName(storeProduct.getTitle());
+			this.getPegaProduct().setProductPriceBase(getPriceFromScript(storeProduct.getPrice()));
+			this.getPegaProduct().setProductDescription(storeProduct.getDescription().replaceAll("<[^>]+>", ""));
+			if (storeProduct.getVariants()[0] != null) {
+				this.getPegaProduct().setProductWeight(storeProduct.getVariants()[0].getWeight());
+			}
+			for (String option : storeProduct.getOptions()) {
+				List<String> options = new ArrayList<>();
+				List<String> optionPrices = new ArrayList<>();
+				// loop over the variants, and add the options and prices to the product
+				for (ShopifyVariant variant : storeProduct.getVariants()) {
+					String varName = variant.getPublic_title();
+					String varPriceDiff = decimalFormat.format(getPriceFromScript(variant.getPrice()) - this.getPegaProduct().getProductPriceBase());
+					String adjustPrice = varName + " " + (formatPrice(varPriceDiff) > 0 ? "+" : "-") + varPriceDiff;
+					options.add(varName);
+					optionPrices.add(adjustPrice);
+				}
+				this.getPegaProduct().getProductOptions().put(option, options);
+				this.getPegaProduct().getProductOptionPriceAdjustments().put(option, optionPrices);
+			}
 
-		filterProductBasicInfo();
-		addImages(page.select("div.grid.product-single img"));
-		filterProductOptions(productOption);
-		filterProductsForPriceAdjustments(productMisc);
+			Arrays.stream(storeProduct.getImages()).forEach(imageSrc -> this.getPegaProduct().getProductImages().add(imageSrc));
+
+		} else {
+			Elements productOption = page.select("select.single-option-selector");
+			Elements productMisc = page.select("select.product-form__variants option");
+
+			filterProductBasicInfo();
+			addImages(page.select("div.grid.product-single img"));
+			filterProductOptions(productOption);
+			filterProductsForPriceAdjustments(productMisc);
+		}
+	}
+
+	Double getPriceFromScript(String scriptedPrice) {
+		String toFormat = scriptedPrice.substring(0, scriptedPrice.length() - 2) + "." + scriptedPrice.substring(scriptedPrice.length() - 2);
+		return formatPrice(toFormat);
+	}
+
+	ShopifyProduct fetchProductScript() {
+		ShopifyProduct shopifyProduct;
+		ObjectMapper mapper = new ObjectMapper();
+		Elements elements = page.select("div.shopify-section script");
+		String json = "";
+		for (Element ele : elements) {
+			if (ele.attr("type").equals("application/json")) json = (ele.data()).trim();
+		}
+		try {
+			shopifyProduct = mapper.readValue(json, ShopifyProduct.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return shopifyProduct;
 	}
 
 	protected void filterProductsForPriceAdjustments(Elements extras) {
@@ -37,8 +94,8 @@ public class ShopifyCrawler extends EcommCrawler {
 	protected void filterOverProducts(List<String> list) {
 		// for each option of the product
 		AtomicInteger i = new AtomicInteger();
-		for (String key : getProduct().getProductOptions().keySet()) {//collect the available choices for this option
-			List<String> option = getProduct().getProductOptions().get(key);
+		for (String key : this.getPegaProduct().getProductOptions().keySet()) {//collect the available choices for this option
+			List<String> option = this.getPegaProduct().getProductOptions().get(key);
 //			System.out.println(key);
 			// new lst to store the formatted choices with adjusted prices
 			List<String> optionChoices = new ArrayList<>();
@@ -49,12 +106,12 @@ public class ShopifyCrawler extends EcommCrawler {
 				String[] listingSplit = list.get(Math.min(i.getAndIncrement(), list.size()-1)).split("-");
 				String priceStr = listingSplit[1].replaceAll("[^\\d.]", ""); // remove non-numbers
 				double adjustedPrice = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr);// parse the price
-				double adjustment = (adjustedPrice - getProduct().getProductPriceBase());
+				double adjustment = (adjustedPrice - this.getPegaProduct().getProductPriceBase());
 				String formatted = String.format("%s %s %s", opt, (adjustment > 0.0 ? "+" : "-"), ("$" + decimalFormat.format(adjustment)));
 				optionChoices.add(formatted);
 //				System.out.println(formatted);
 			}
-			getProduct().getProductOptionPriceAdjustments().put(key, optionChoices);
+			this.getPegaProduct().getProductOptionPriceAdjustments().put(key, optionChoices);
 //			System.out.println("OPTION " + index.getAndIncrement() + " | END");
 		}
 	}
@@ -68,15 +125,15 @@ public class ShopifyCrawler extends EcommCrawler {
 
 			choices.forEach(choice -> optionChoices.add(choice.text()));
 			Collections.sort(optionChoices);
-			getProduct().getProductOptions().put(optionName, optionChoices);
+			this.getPegaProduct().getProductOptions().put(optionName, optionChoices);
 		});
 	}
 
 	protected void filterProductBasicInfo() {
 		String title = page.select("h1.product-single__title").text();
-		getProduct().setProductName(title);
+		this.getPegaProduct().setProductName(title);
 		checkForSale();
-		getProduct().setProductDescription(page.select("div.product-single__description").text());
+		this.getPegaProduct().setProductDescription(page.select("div.product-single__description").text());
 	}
 
 	private void checkForSale() {
@@ -85,24 +142,24 @@ public class ShopifyCrawler extends EcommCrawler {
 		String saleTag = page.select("div.product-tag").text().toLowerCase().trim();
 		if (saleTag.contains("sale")) onSale = true;
 		System.out.println("Product Sale: <-|-> " + onSale);
-		getProduct().setOnSale(onSale);
+		this.getPegaProduct().setOnSale(onSale);
 		scrapePrice();
 	}
 
 	private void scrapePrice() {
 		String price;
-		if (getProduct().isOnSale()) {
+		if (this.getPegaProduct().isOnSale()) {
 			price = page.select("s.product-single__price.product-single__price--compare").text();
 			String salePrice = page.select("span.product-single__price").attr("content");
 //			System.out.println(cleanPrice(salePrice));
 
-			getProduct().setProductPriceBase(price.isEmpty() ? formatPrice(cleanPrice(salePrice)) : formatPrice(cleanPrice(price)));
+			this.getPegaProduct().setProductPriceBase(price.isEmpty() ? formatPrice(cleanPrice(salePrice)) : formatPrice(cleanPrice(price)));
 
-			getProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));
-			getProduct().setWhatYouSave((getProduct().getProductPriceBase() - getProduct().getListedPrice()));
+			this.getPegaProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));
+			this.getPegaProduct().setWhatYouSave((this.getPegaProduct().getProductPriceBase() - this.getPegaProduct().getListedPrice()));
 		} else {
 			price = page.select("div.single-product-price").attr("data-price");
-			getProduct().setProductPriceBase(formatPrice(cleanPrice(price)));
+			this.getPegaProduct().setProductPriceBase(formatPrice(cleanPrice(price)));
 		}
 //		System.out.println(cleanPrice(price));
 	}
