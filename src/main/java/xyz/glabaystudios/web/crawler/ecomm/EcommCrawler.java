@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.crawler.Crawler;
 import xyz.glabaystudios.web.crawler.ecomm.stores.*;
 import xyz.glabaystudios.web.model.ecomm.PegaProduct;
@@ -36,7 +37,7 @@ public abstract class EcommCrawler extends Crawler {
 			else if (domain.contains("etsy.com")) return new EtsyCrawler(domain);
 			else if (domain.contains("amazon.com")) return new AmazonCrawler(domain);
 		} catch (IOException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("getCrawlingMerchant -> InputOutput ", e);
 		}
 		return new DefaultCrawler(domain);
 	}

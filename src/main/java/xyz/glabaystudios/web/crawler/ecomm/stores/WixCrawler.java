@@ -8,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
 import xyz.glabaystudios.web.model.ecomm.wix.WixCatalog;
 import xyz.glabaystudios.web.model.ecomm.wix.WixProductAdditionInfo;
@@ -46,6 +47,7 @@ public class WixCrawler extends EcommCrawler {
 			for (String option : storeProduct.getProduct().getOptions()) {
 				List<String> options = new ArrayList<>();
 				List<String> optionPrices = new ArrayList<>();
+				// TODO: Find wixsite with Store, and products with options
 				// TODO: loop over the variants, and add the options and prices to the product
 //				for (WixProduct variant : storeProduct.getProduct().getOptions()) {
 //					String varName = variant.getPublic_title();
@@ -100,14 +102,15 @@ public class WixCrawler extends EcommCrawler {
 			}
 
 			wixProduct = mapper.readValue(json, WixCatalog.class);
-		} catch (ParseException | JsonProcessingException e) {
-			e.printStackTrace();
+		} catch (ParseException e) {
+			NetworkExceptionHandler.handleException("fetchProductScript -> Parse ", e);
+		} catch (JsonProcessingException e) {
+			NetworkExceptionHandler.handleException("fetchProductScript -> JsonProcessing ", e);
 		}
 		return wixProduct;
 	}
 
 	protected void filterProductsForPriceAdjustments(Elements extras) {
-//		System.out.println("******** NEXT - MISC ELEMENTS ********");
 		List<String> list = new ArrayList<>();
 		extras.forEach(misc -> list.add(misc.text()));
 		Collections.sort(list);
@@ -120,27 +123,20 @@ public class WixCrawler extends EcommCrawler {
 		for (String key : this.getPegaProduct().getProductOptions().keySet()) {//collect the available choices for this option
 			List<String> option = this.getPegaProduct().getProductOptions().get(key);
 //			System.out.println(key);
-			// new lst to store the formatted choices with adjusted prices
 			List<String> optionChoices = new ArrayList<>();
-			// for each choice
 			for (String opt : option) {
-				// listing ex: "2 inch / 22 inch - $81.95 USD"
-//				System.out.println(list.get(Math.min(i.get(), list.size()-1)));
 				String[] listingSplit = list.get(Math.min(i.getAndIncrement(), list.size()-1)).split("-");
 				String priceStr = listingSplit[1].replaceAll("[^\\d.]", ""); // remove non-numbers
 				double adjustedPrice = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr);// parse the price
 				double adjustment = (adjustedPrice - this.getPegaProduct().getProductPriceBase());
 				String formatted = String.format("%s %s %s", opt, (adjustment > 0.0 ? "+" : "-"), ("$" + decimalFormat.format(adjustment)));
 				optionChoices.add(formatted);
-//				System.out.println(formatted);
 			}
 			this.getPegaProduct().getProductOptionPriceAdjustments().put(key, optionChoices);
-//			System.out.println("OPTION " + index.getAndIncrement() + " | END");
 		}
 	}
 
 	protected void filterProductOptions(Elements itemOptions) {
-//		System.out.println("******** NEXT - OPTION ELEMENTS ********");
 		itemOptions.forEach(option -> {
 			String optionName = option.attr("data-name");
 			List<String> optionChoices = new ArrayList<>();

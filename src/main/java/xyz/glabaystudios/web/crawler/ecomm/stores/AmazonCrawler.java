@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * This is a WIP class
+ * Amazon has a wide array of products, types, and styles of options, the shear amount of variants to filter over is overwhelming...
+ * We'll come back to this class after I get some more relevant E-commence stores are complete
+ */
 public class AmazonCrawler extends EcommCrawler {
 
 	public AmazonCrawler(String domain) {

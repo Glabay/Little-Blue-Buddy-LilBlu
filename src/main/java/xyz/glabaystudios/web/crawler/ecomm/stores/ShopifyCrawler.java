@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
 import xyz.glabaystudios.web.model.ecomm.shopify.ShopifyProduct;
 import xyz.glabaystudios.web.model.ecomm.shopify.ShopifyVariant;
@@ -76,7 +77,7 @@ public class ShopifyCrawler extends EcommCrawler {
 		try {
 			shopifyProduct = mapper.readValue(json, ShopifyProduct.class);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			NetworkExceptionHandler.handleException("fetchProductScript -> JsonProcessing ", e);
 			return null;
 		}
 

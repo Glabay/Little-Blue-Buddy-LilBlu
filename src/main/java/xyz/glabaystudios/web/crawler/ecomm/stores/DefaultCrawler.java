@@ -6,6 +6,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
 
 import java.util.ArrayList;
@@ -29,7 +30,8 @@ public class DefaultCrawler extends EcommCrawler {
 		if (this.getPegaProduct().getProductOptions().size() > 0) {
 			try {
 				filterProductsForPriceAdjustments();
-			} catch (ParseException ignore) {
+			} catch (ParseException e) {
+				NetworkExceptionHandler.handleException("crawlThePageForContent -> Parse ", e);
 			}
 		}
 	}
@@ -42,7 +44,8 @@ public class DefaultCrawler extends EcommCrawler {
 			oneLiner = oneLiner.split("= \\{")[1].replace("</script>", "").replace("} || {};", "").trim();
 			options = List.of(oneLiner.split("},"));
 			filterOverProducts(options);
-		} catch (Exception ignore) {
+		} catch (Exception e) {
+			NetworkExceptionHandler.handleException("filterProductsForPriceAdjustments -> Exception: ", e);
 			Elements jsonData = page.select("form.variations_form.cart");
 			String jsonStr = jsonData.attr("data-product_variations");
 
@@ -55,7 +58,7 @@ public class DefaultCrawler extends EcommCrawler {
 					JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonArray.get(i).toString());
 					double finalPrice = formatPrice(cleanPrice(jsonObject.get("display_regular_price").toString())) - this.getPegaProduct().getProductPriceBase();
 					String formatted = String.format("%s %s %s", option.get(i), (finalPrice > 0.0 ? "+" : "-"), ("$" + decimalFormat.format(finalPrice)));
-					System.out.println(formatted);
+//					System.out.println(formatted);
 					optionChoices.add(formatted);
 				}
 				this.getPegaProduct().getProductOptionPriceAdjustments().put(key, optionChoices);
@@ -120,9 +123,8 @@ public class DefaultCrawler extends EcommCrawler {
 
 	private void filterProductImages() {
 		Elements imageElements = page.select("div.images-wrapper img");
-		if (imageElements.isEmpty()) {
-			imageElements = page.select("div.images img");
-		}
+		if (imageElements.isEmpty()) imageElements = page.select("div.images img");
+
 		addImages(imageElements);
 	}
 
@@ -160,11 +162,9 @@ public class DefaultCrawler extends EcommCrawler {
 	}
 
 	private void checkForSale() {
-//		System.out.println("<-|-> \uD83D\uDCB0 <-|->");
 		String saleString = page.select("div.single-product-price").attr("data-on-sale");
 		boolean onSale = false;
 		if (!saleString.isEmpty() || !saleString.isBlank()) onSale = Boolean.parseBoolean(saleString);
-//		System.out.println("Product Sale: <-|-> " + onSale);
 		this.getPegaProduct().setOnSale(onSale);
 		scrapePrice();
 	}
@@ -179,6 +179,5 @@ public class DefaultCrawler extends EcommCrawler {
 			this.getPegaProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));
 			this.getPegaProduct().setWhatYouSave((this.getPegaProduct().getProductPriceBase() - this.getPegaProduct().getListedPrice()));
 		}
-//		System.out.println(getProduct().getProductPriceBase());
 	}
 }
