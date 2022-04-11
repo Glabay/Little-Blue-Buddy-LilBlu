@@ -9,7 +9,8 @@
 
 # DNS Panel (Main UI);
 > Using the WhoIs API, fetch and collect the DNS records from the given Domain.
-> These Records are the Main Exchange Servers, for a fast check with the Customer while on the Welcome Call to ensure weather or not we must
+> These Records are the Main Exchange Servers, Name Server, and more data for a fast check with the Customer while on the Welcome Call to ensure weather or not we must have a chat with our customer about the potential of service interruptions with their mail services
+> 
 > Clear reminder if the call was Inbound, or Outbound
 > - Never forget an End of Call Survey again. 😤 🤦
 > 
