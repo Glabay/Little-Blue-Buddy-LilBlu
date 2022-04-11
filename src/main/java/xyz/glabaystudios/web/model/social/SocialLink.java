@@ -15,7 +15,11 @@ public class SocialLink {
 			"LinkedIn",
 			"Pinterest",
 			"TikTok",
-			"Reddit"
+			"Reddit",
+			"spotify",
+			"soundcloud",
+			"itunes.apple",
+			"snapchat"
 	};
 
 	private String socialPlatformURL;

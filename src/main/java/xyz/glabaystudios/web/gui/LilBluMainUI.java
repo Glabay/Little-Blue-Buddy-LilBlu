@@ -36,10 +36,10 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static xyz.glabaystudios.web.gui.FxPanel.CallType.INBOUND;
-import static xyz.glabaystudios.web.gui.FxPanel.CallType.OUTBOUND;
+import static xyz.glabaystudios.web.gui.LilBluMainUI.CallType.INBOUND;
+import static xyz.glabaystudios.web.gui.LilBluMainUI.CallType.OUTBOUND;
 
-public class FxPanel implements Initializable {
+public class LilBluMainUI implements Initializable {
 
 	public Font x1;
 	public Pane dnsPane;
@@ -96,8 +96,8 @@ public class FxPanel implements Initializable {
 			callTypeLabel.setText("~REMEMBER THE SURVEY~");
 		}
 		if (callType.equals(OUTBOUND)) {
-			callTypeLabel.setTextFill(Color.web("#ADADAD"));
-			callTypeLabel.setText("~ YOU GOT THIS ~");
+			callTypeLabel.setTextFill(Color.web("#007C9B"));
+			callTypeLabel.setText("~ YOU'VE GOT THIS ~");
 		}
 	}
 

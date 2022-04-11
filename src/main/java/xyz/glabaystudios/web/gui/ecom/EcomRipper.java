@@ -59,6 +59,11 @@ public class EcomRipper implements Initializable {
 		getBasePriceField().setText(String.valueOf(ecommCrawler.getPegaProduct().getProductPriceBase()));
 		getProductDescriptionArea().setText(ecommCrawler.getPegaProduct().getProductDescription());
 
+		getProductWeightField().setText(ecommCrawler.getPegaProduct().getProductWeight());
+		getProductWidthField().setText(String.valueOf(ecommCrawler.getPegaProduct().getProductWidth()));
+		getProductHeightField().setText(String.valueOf(ecommCrawler.getPegaProduct().getProductHeight()));
+		getProductLengthField().setText(String.valueOf(ecommCrawler.getPegaProduct().getProductLength()));
+
 		HashMap<String, List<String>> options = ecommCrawler.getPegaProduct().getProductOptions();
 		HashMap<String, List<String>> optionAdjustments = ecommCrawler.getPegaProduct().getProductOptionPriceAdjustments();
 		productOptionsBox.getChildren().clear();

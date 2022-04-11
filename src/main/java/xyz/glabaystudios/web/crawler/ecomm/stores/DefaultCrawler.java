@@ -44,8 +44,8 @@ public class DefaultCrawler extends EcommCrawler {
 			oneLiner = oneLiner.split("= \\{")[1].replace("</script>", "").replace("} || {};", "").trim();
 			options = List.of(oneLiner.split("},"));
 			filterOverProducts(options);
-		} catch (Exception e) {
-			NetworkExceptionHandler.handleException("filterProductsForPriceAdjustments -> Exception: ", e);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			NetworkExceptionHandler.handleException("filterProductsForPriceAdjustments -> ArrayIndexOutOfBounds: ", e);
 			Elements jsonData = page.select("form.variations_form.cart");
 			String jsonStr = jsonData.attr("data-product_variations");
 
@@ -114,9 +114,8 @@ public class DefaultCrawler extends EcommCrawler {
 	}
 
 	protected void filterProductBasicInfo() {
-		addImages(page.select("div.images-wrapper img"));
 		scrapeProductName();
-		checkForSale();
+		scrapePrice();
 		scrapeDescription();
 		scrapeAdditionalInformation();
 	}
@@ -124,6 +123,7 @@ public class DefaultCrawler extends EcommCrawler {
 	private void filterProductImages() {
 		Elements imageElements = page.select("div.images-wrapper img");
 		if (imageElements.isEmpty()) imageElements = page.select("div.images img");
+		if (imageElements.isEmpty()) imageElements = page.select("div.productimages.js-productimages.bundle-0 img");
 
 		addImages(imageElements);
 	}
@@ -131,6 +131,7 @@ public class DefaultCrawler extends EcommCrawler {
 	private void scrapeProductName() {
 		String title = page.select("h1.single-product-title").text();
 		if (title.isEmpty()) title = page.select("div.summary.entry-summary span.headline").text();
+		if (title.isEmpty()) title = page.select("h1.itemname.item-detail__name.h1").text();
 
 //		System.out.println("Product Title: <-|-> " + title);
 		this.getPegaProduct().setProductName(title);
@@ -138,6 +139,8 @@ public class DefaultCrawler extends EcommCrawler {
 
 	private void scrapeDescription() {
 		String description = page.select("div.single-product-description ").text();
+		if (description.isEmpty()) description = page.select("div.item-detail__description").text().trim();
+
 		StringBuilder descBuilder = new StringBuilder();
 		if (description.isEmpty()) {
 			descBuilder.append(page.select("div.woocommerce-product-details__short-description").text()).append("\n");
@@ -161,19 +164,26 @@ public class DefaultCrawler extends EcommCrawler {
 		}
 	}
 
-	private void checkForSale() {
+	private boolean checkForSale() {
 		String saleString = page.select("div.single-product-price").attr("data-on-sale");
 		boolean onSale = false;
 		if (!saleString.isEmpty() || !saleString.isBlank()) onSale = Boolean.parseBoolean(saleString);
 		this.getPegaProduct().setOnSale(onSale);
-		scrapePrice();
+		return onSale;
 	}
 
 	private void scrapePrice() {
 		String price = page.select("div.single-product-price").attr("data-price");
 		if (price.isEmpty()) price = page.select("p.price span.woocommerce-Price-amount.amount").text();
+		if (price.isEmpty()) price = page.select("div.itemprice span.catalog-item__price span").text();
+
+
+//		System.out.println(page.select("div.itemprice span.catalog-item__price span").text());
+
 		this.getPegaProduct().setProductPriceBase(formatPrice(cleanPrice(price)));
-		if (this.getPegaProduct().isOnSale()) {
+
+		// TODO: Below may be un-needed? I hva eto review this a little more on other sites to verify...
+		if (checkForSale()) {
 			String salePrice = page.select("div.single-product-price").attr("data-price-sale");
 
 			this.getPegaProduct().setListedPrice(formatPrice(cleanPrice(salePrice)));

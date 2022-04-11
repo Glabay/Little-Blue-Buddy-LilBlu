@@ -32,6 +32,7 @@ public class SocialCrawler extends Crawler {
 	private void checkHref(String href) {
 		for (String key : SocialLink.getSocialKeys()) {
 			if (href.toLowerCase().contains(key.toLowerCase())) {
+				if (href.contains("open." + key.toLowerCase())) continue;
 				String[] socialPlatformAndSocialDisplayName = href.toLowerCase().split(".com");
 				String displayName = socialPlatformAndSocialDisplayName[socialPlatformAndSocialDisplayName.length - 1].replace("/", "");
 				SocialLink dto = new SocialLink();

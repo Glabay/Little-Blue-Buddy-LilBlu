@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.*?>
-<AnchorPane prefHeight="360.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.FxPanel">
+<AnchorPane prefHeight="360.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.glabaystudios.web.gui.LilBluMainUI">
   <TextArea layoutY="25.0" prefHeight="335.0" prefWidth="470.0" wrapText="true" />
   <Pane fx:id="dnsPane" layoutX="470.0" prefHeight="360.0" prefWidth="270.0">
       <Rectangle fx:id="dnsSquare" arcHeight="5.0" arcWidth="5.0" fill="#ef7832" height="360.0" stroke="#ffe6a7" strokeType="INSIDE" width="270.0" />
