@@ -3,12 +3,10 @@ package xyz.glabaystudios.web.crawler.ecomm;
 import lombok.Getter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import xyz.glabaystudios.web.crawler.Crawler;
-import xyz.glabaystudios.web.crawler.ecomm.stores.AmazonCrawler;
-import xyz.glabaystudios.web.crawler.ecomm.stores.DefaultCrawler;
-import xyz.glabaystudios.web.crawler.ecomm.stores.EtsyCrawler;
-import xyz.glabaystudios.web.crawler.ecomm.stores.ShopifyCrawler;
+import xyz.glabaystudios.web.crawler.ecomm.stores.*;
 import xyz.glabaystudios.web.model.ecomm.PegaProduct;
 
 import java.io.IOException;
@@ -27,8 +25,14 @@ public abstract class EcommCrawler extends Crawler {
 	public static EcommCrawler getCrawlingMerchant(String domain) {
 		try {
 			Document page = Jsoup.connect(domain).userAgent(userAgent).timeout(42000).get();
+			Elements metas = page.getElementsByTag("meta");
 			boolean isShopify = !page.select("div.shopify-section").isEmpty();
+			boolean isWix = false;
+			for (Element metaTag : metas) {
+				if (metaTag.attr("content").toLowerCase().contains("wix.com")) isWix = true;
+			}
 			if (isShopify) return new ShopifyCrawler(domain);
+			if (isWix) return new WixCrawler(domain);
 			else if (domain.contains("etsy.com")) return new EtsyCrawler(domain);
 			else if (domain.contains("amazon.com")) return new AmazonCrawler(domain);
 		} catch (IOException e) {

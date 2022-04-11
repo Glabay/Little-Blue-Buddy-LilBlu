@@ -28,6 +28,7 @@ public class PegaProduct {
 
 	private final ArrayList<String> productImages = new ArrayList<>();
 
+	private String sku;
 
 	public PegaProduct() {
 		productOptions = new HashMap<>();
@@ -35,7 +36,7 @@ public class PegaProduct {
 	}
 
 	public String getInfo() {
-		String base = "Product: %n%s%nPrice: %n$%.2f%nDescription: %n%s%nWeight: %n%s%nDimensions: W=%.2f, L=%.2f, H=%.2f%nProduct Images: %n%s%nOptions: %n%s%nOption Adjustments: %n%s%n";
+		String base = "Product: %n%s%nPrice: %n$%.2f%nSKU: %s%nDescription: %n%s%nWeight: %n%s%nDimensions: W=%.2f, L=%.2f, H=%.2f%nProduct Images: %n%s%nOptions: %n%s%nOption Adjustments: %n%s%n";
 
 		StringBuilder optionBuilder = new StringBuilder();
 		productOptions.keySet().forEach(option -> {
@@ -53,6 +54,7 @@ public class PegaProduct {
 		return String.format(base,
 				productName,
 				productPriceBase,
+				sku,
 				productDescription,
 				productWeight,
 				productWidth,

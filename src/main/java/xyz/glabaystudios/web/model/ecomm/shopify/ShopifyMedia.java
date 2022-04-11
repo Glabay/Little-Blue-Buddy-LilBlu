@@ -1,4 +1,4 @@
-package xyz.glabaystudios.web.model.ecomm;
+package xyz.glabaystudios.web.model.ecomm.shopify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

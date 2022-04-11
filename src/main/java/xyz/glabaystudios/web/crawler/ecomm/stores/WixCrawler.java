@@ -2,52 +2,64 @@ package xyz.glabaystudios.web.crawler.ecomm.stores;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONAware;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import xyz.glabaystudios.web.crawler.ecomm.EcommCrawler;
-import xyz.glabaystudios.web.model.ecomm.shopify.ShopifyProduct;
-import xyz.glabaystudios.web.model.ecomm.shopify.ShopifyVariant;
+import xyz.glabaystudios.web.model.ecomm.wix.WixCatalog;
+import xyz.glabaystudios.web.model.ecomm.wix.WixProductAdditionInfo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ShopifyCrawler extends EcommCrawler {
+public class WixCrawler extends EcommCrawler {
 
-	public ShopifyCrawler(String domain) {
+	public WixCrawler(String domain) {
 		super(domain);
 	}
 
 	@Override
 	public void crawlThePageForContent() {
 		if (page == null) return;
-		System.out.println(" <-|-> \uD83D\uDCB0 <-|-> SHOPIFY <-|-> \uD83D\uDCB0 <-|->");
-		ShopifyProduct storeProduct = fetchProductScript();
+		System.out.println(" <-|-> \uD83D\uDCB0 <-|-> WIX-SHOP <-|-> \uD83D\uDCB0 <-|->");
+		WixCatalog storeProduct = fetchProductScript();
 		if (storeProduct != null) {
-			this.getPegaProduct().setProductName(storeProduct.getTitle());
-			this.getPegaProduct().setProductPriceBase(getPriceFromScript(storeProduct.getPrice()));
-			this.getPegaProduct().setProductDescription(storeProduct.getDescription().replaceAll("<[^>]+>", ""));
-			if (storeProduct.getVariants()[0] != null) {
-				this.getPegaProduct().setProductWeight(storeProduct.getVariants()[0].getWeight());
+			System.out.println(storeProduct);
+
+			this.getPegaProduct().setProductName(storeProduct.getProduct().getName());
+			this.getPegaProduct().setProductPriceBase(storeProduct.getProduct().getPrice());
+			String description = storeProduct.getProduct().getDescription().replaceAll("<[^>]+>", "");
+			if (description.isEmpty()) {
+				StringBuilder descBuilder = new StringBuilder();
+				for (WixProductAdditionInfo additionalInfo : storeProduct.getProduct().getAdditionalInfo()) {
+					descBuilder.append(additionalInfo.getTitle()).append("\n");
+					descBuilder.append(additionalInfo.getDescription().replaceAll("<[^>]+>", "").trim()).append("\n");
+				}
+				description = descBuilder.toString();
 			}
-			for (String option : storeProduct.getOptions()) {
+			this.getPegaProduct().setProductDescription(description);
+			this.getPegaProduct().setProductWeight(String.valueOf(storeProduct.getProduct().getWeight()));
+
+			for (String option : storeProduct.getProduct().getOptions()) {
 				List<String> options = new ArrayList<>();
 				List<String> optionPrices = new ArrayList<>();
-				// loop over the variants, and add the options and prices to the product
-				for (ShopifyVariant variant : storeProduct.getVariants()) {
-					String varName = variant.getPublic_title();
-					String varPriceDiff = decimalFormat.format(getPriceFromScript(variant.getPrice()) - this.getPegaProduct().getProductPriceBase());
-					String adjustPrice = varName + " " + (formatPrice(varPriceDiff) > 0 ? "+" : "-") + varPriceDiff;
-					options.add(varName);
-					optionPrices.add(adjustPrice);
-				}
+				// TODO: loop over the variants, and add the options and prices to the product
+//				for (WixProduct variant : storeProduct.getProduct().getOptions()) {
+//					String varName = variant.getPublic_title();
+//					String varPriceDiff = decimalFormat.format(getPriceFromScript(variant.getPrice()) - this.getPegaProduct().getProductPriceBase());
+//					String adjustPrice = varName + " " + (formatPrice(varPriceDiff) > 0 ? "+" : "-") + varPriceDiff;
+//					options.add(varName);
+//					optionPrices.add(adjustPrice);
+//				}
 				this.getPegaProduct().getProductOptions().put(option, options);
 				this.getPegaProduct().getProductOptionPriceAdjustments().put(option, optionPrices);
 			}
 
-			Arrays.stream(storeProduct.getImages()).forEach(imageSrc -> this.getPegaProduct().getProductImages().add(imageSrc));
+			Arrays.stream(storeProduct.getProduct().getMedia()).forEach(imageSrc -> this.getPegaProduct().getProductImages().add(imageSrc.getFullUrl()));
+
 
 		} else {
 			Elements productOption = page.select("select.single-option-selector");
@@ -60,27 +72,38 @@ public class ShopifyCrawler extends EcommCrawler {
 		}
 	}
 
-	Double getPriceFromScript(String scriptedPrice) {
-		String toFormat = scriptedPrice.substring(0, scriptedPrice.length() - 2) + "." + scriptedPrice.substring(scriptedPrice.length() - 2);
-		return formatPrice(toFormat);
-	}
-
-	ShopifyProduct fetchProductScript() {
-		ShopifyProduct shopifyProduct;
+	WixCatalog fetchProductScript() {
+		WixCatalog wixProduct = null;
 		ObjectMapper mapper = new ObjectMapper();
-		Elements elements = page.select("div.shopify-section script");
+		Elements elements = page.getElementsByTag("script");
 		String json = "";
 		for (Element ele : elements) {
-			if (ele.attr("type").equals("application/json")) json = (ele.data()).trim();
-		}
-		try {
-			shopifyProduct = mapper.readValue(json, ShopifyProduct.class);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			return null;
+			if (ele.attr("type").equals("application/json") && ele.attr("id").equals("wix-warmup-data")) json = (ele.data()).trim();
 		}
 
-		return shopifyProduct;
+		try {
+			JSONObject object = (JSONObject) new JSONParser().parse(json);
+			JSONObject obj = (JSONObject) object.get("appsWarmupData");
+
+			Set<?> set = obj.keySet();
+			for (Object ob : set) {
+				String key = String.valueOf(ob);
+				JSONObject obj2 = (JSONObject) obj.get(key);
+				Set<?> set2 = obj2.keySet();
+				json = set2.stream()
+						.map(String::valueOf)
+						.map(key2 -> (JSONObject) obj2.get(key2))
+						.map(obj3 -> (JSONObject) obj3.get("catalog"))
+						.findFirst()
+						.map(JSONAware::toJSONString)
+						.orElse(json);
+			}
+
+			wixProduct = mapper.readValue(json, WixCatalog.class);
+		} catch (ParseException | JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return wixProduct;
 	}
 
 	protected void filterProductsForPriceAdjustments(Elements extras) {
