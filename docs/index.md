@@ -9,18 +9,18 @@
 
 ### DNS Panel (Main UI);
 > Using the WhoIs API, fetch and collect the DNS records from the given Domain.
-> These Records are the Main Exchange Servers, Name Server, and more data for a fast check with the Customer while on the Welcome Call to ensure weather or not we must have a chat with our customer about the potential of service interruptions with their mail services
-> 
-> Clear reminder if the call was Inbound, or Outbound
+> These Records are the Main Exchange Servers, Name Server, and more data for a fast check with the Customer while on the Welcome Call to ensure whether or not we must have a chat with our customer about the potential of service interruptions with their mail services
+>
+> Clear reminder if the call was inbound or Outbound
 > - Never forget an End of Call Survey again. 😤 🤦
-> 
+>
 > Always ready notepad that will scroll
 
 ### Social Presence;
 > Check the domain for any Social Media links (Facebook, Twitter, Instagram, TikTok, LinkedIn, YouTube, Reddit, Soundcloud, Spotify, etc...)
 
 ### Exception emailing;
-> As soon as you open the window the date and time are autofilled; easy tracking of your time, forget to enter a finish time? Not a problem, it will fill it in when you hit send. That will email off to the right depot/distro in the correct/expected template
+> As soon as you open the window the date and time are auto-filled; easy tracking of your time, forget to enter a finish time? Not a problem, it will fill it in when you hit send. That will email off to the right depot/distro in the correct/expected template
 
 ### Templates;
 > doing a follow-up, scheduling a callback? most of the redundant information will auto-populate then you only have to worry about the reason, then click to have the expected template copied to your Clipboard
@@ -35,9 +35,9 @@
 > - This is a key feature that will help agents not miss or overlook files
 
 ### EcomRipper;
-> When the customer has an existing Online-Store, and wishes to use the products from it
+> When the customer has an existing Online-Store and wishes to use the products from it
 > This tool will allow for the WBC Agent to copy the URI of the existing product and have the tool fetch the proper information
-> - This will output the result to a proper format that is a simple Click to copy and then fast pasting into Pega.
-> - The result prints to a familiar output so the agents can quickly and accuracy confirm prices and variants with the customer.
-> - - When products have multiple options that effect the price of an item, it is very time-consuming to work that math out and capture the variants.
-> - This is a key feature that will cut down the amount of time spent on the Ecomm Product module on the interview.
+> - This will output the result to a proper format that is a simple click to copy and then fast pasting into Pega.
+> - The result prints to a familiar output so the agents can quickly and accurately confirm prices and variants with the customer.
+> - - When products have multiple options that affect the price of an item, it is very time-consuming to work that math out and capture the variants.
+> - This is a key feature that will cut down the amount of time spent on the Ecomm Product module during the interview.
