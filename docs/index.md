@@ -1,6 +1,6 @@
 # Welcome to GlabayStudios - Little Blue Buddy (LilBlu)
 
-<img alt="LittleBlue" height="164" src="lilblu-large.png" width="164"/><img alt="Newfold Digital" height="123" src="C:\Users\Owner\Desktop\Private Servers\WebDotGlab\docs\newfold-asset-logo.png" width="474"/>
+<img alt="LittleBlue" height="164" src="lilblu-large.png" width="164"/><img alt="Newfold Digital" height="123" src="newfold-asset-logo.png" width="474"/>
 
 ## **Key Features:**
 ### Document Renaming;
