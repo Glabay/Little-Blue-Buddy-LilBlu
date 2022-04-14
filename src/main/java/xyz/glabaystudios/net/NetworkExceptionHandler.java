@@ -34,7 +34,7 @@ public class NetworkExceptionHandler {
 		System.out.println("HTTP POST\n" + json);
 		HttpRequest request = HttpRequest.newBuilder()
 				.POST(HttpRequest.BodyPublishers.ofString(json))
-				.uri(URI.create("http://localhost:8080/lilblu/api/error")) // TODO
+				.uri(URI.create("http://localhost:8080/lilblu/api/error"))
 				.setHeader("User-Agent", "Little Blue Buddy - Exception") // add request header
 				.header("Content-Type", "application/json")
 				.build();

@@ -13,7 +13,10 @@ public interface WebsitePageCrawler {
 
 	default Document getContent(String domain, String userAgent, boolean usingSecureConnection) {
 		try {
-			return Jsoup.connect((usingSecureConnection ? "https://" : "http://") + domain).userAgent(userAgent).timeout(42000).get();
+			return Jsoup.connect((usingSecureConnection ? "https://" : "http://") + domain)
+					.userAgent(userAgent)
+					.timeout(42000)
+					.get();
 		} catch (UnknownHostException e) {
 			NetworkExceptionHandler.handleException("getContent -> UnknownHost " + domain, e);
 			return null;

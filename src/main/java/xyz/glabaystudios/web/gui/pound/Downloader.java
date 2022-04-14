@@ -38,9 +38,7 @@ public class Downloader extends Thread {
 				try {
 					if (!file.exists()) {
 						File file2 = new File(localPath);
-						if (!file2.exists()) {
-							new File(localPath).mkdirs();
-						}
+						if (!file2.exists()) new File(localPath).mkdirs();
 						file.createNewFile();
 					}
 					String uri = domain + link.replace(" ", "%20");
