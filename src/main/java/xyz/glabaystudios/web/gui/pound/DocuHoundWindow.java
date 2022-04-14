@@ -7,8 +7,12 @@ import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.Controllers;
 import xyz.glabaystudios.web.crawler.pound.PackLeader;
 
+import javax.net.ssl.SSLException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +54,7 @@ public class DocuHoundWindow {
 			return;
 		}
 		packStatusLabel.setText("");
-		String sitemap = "/sitemap.xml";
+		String sitemap = getSitemapPage(domain, false);
 		URL url;
 		String target = domain + sitemap;
 		try {
@@ -70,6 +74,7 @@ public class DocuHoundWindow {
 			}
 			if (redirect) {
 				target = connection.getHeaderField("Location");
+				System.out.println("Rerouting  <-|-> " + target);
 			} else target = String.valueOf(connection.getURL());
 		} catch (IOException e) {
 			NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> InputOutput", e);
@@ -103,6 +108,50 @@ public class DocuHoundWindow {
 		updateFoundList();
 	}
 
+	private String getSitemapPage(String domain, boolean fallback) {
+		String result = "/sitemap.xml";
+		try {
+			URL domainSitemap = new URL(domain + (fallback ? "" : "/robots.txt"));
+
+			HttpURLConnection connection = (HttpURLConnection) domainSitemap.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+			connection.setInstanceFollowRedirects(true);
+			int code = connection.getResponseCode();
+			System.out.println("Code: " + code);
+			boolean redirect = false;
+			if (code != HttpURLConnection.HTTP_OK) {
+				if (code == HttpURLConnection.HTTP_MOVED_TEMP
+						|| code == HttpURLConnection.HTTP_MOVED_PERM
+						|| code == HttpURLConnection.HTTP_SEE_OTHER)
+					redirect = true;
+			}
+			if (redirect) {
+				result = getSitemapPage(connection.getHeaderField("Location"), true);
+				System.out.println("Rerouting  <-|-> " + result);
+				return result;
+			} else {
+				InputStreamReader inputStreamReader = new InputStreamReader(domainSitemap.openStream());
+				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+				String inputLine;
+				while ((inputLine = bufferedReader.readLine()) != null) {
+					if (inputLine.startsWith("Sitemap:")) {
+						System.out.println("AltMap-Found: " + inputLine);
+					}
+				}
+				bufferedReader.close();
+			}
+		} catch (MalformedURLException e) {
+			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> MalformedURL", e);
+		} catch (SSLException e) {
+			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> SSLException\nChecking again without SSL", e);
+		} catch (IOException e) {
+			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> InputOutput", e);
+		}
+
+		return result;
+	}
+
 	private void updateFoundList() {
 		packStatusLabel.setText("Pack is returning...");
 		System.out.println("Done!");
@@ -130,8 +179,6 @@ public class DocuHoundWindow {
 	public void saveDocuments() {
 		System.out.println("Time to Save the Documents...");
 		saveDocsBtn.setDisable(true);
-		Alert alert = new Alert(AlertType.INFORMATION, "Downloading documents...\nYou can close this popup");
-		alert.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
 		Downloader docuDownloader;
 		int split = 16;
 		int houndsNeeded = foundDocuments.size() / split;
@@ -163,6 +210,6 @@ public class DocuHoundWindow {
 			docuDownloader.passDocumentList((HashMap<String, String>) foundDocuments);
 			docuDownloader.start();
 		}
-		alert.show();
+		//TODO: Open Downloads Directory
 	}
 }
