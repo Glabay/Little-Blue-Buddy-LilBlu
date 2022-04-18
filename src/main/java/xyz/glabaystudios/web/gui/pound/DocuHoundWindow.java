@@ -108,35 +108,23 @@ public class DocuHoundWindow {
 
 			HttpURLConnection connection = (HttpURLConnection) domainSitemap.openConnection();
 			connection.setRequestMethod("GET");
+			System.out.println(connection.getURL().toString());
 			connection.connect();
 			connection.setInstanceFollowRedirects(true);
 			int code = connection.getResponseCode();
 			System.out.println("Code: " + code);
-			boolean redirect = false;
-			if (code != HttpURLConnection.HTTP_OK) {
-				if (code == HttpURLConnection.HTTP_MOVED_TEMP
-						|| code == HttpURLConnection.HTTP_MOVED_PERM
-						|| code == HttpURLConnection.HTTP_SEE_OTHER)
-					redirect = true;
-			}
-			if (redirect) {
-				result = getSitemapPage(connection.getHeaderField("Location"), true);
-				System.out.println("Rerouting  <-|-> " + result);
-				return result;
-			} else {
-				InputStreamReader inputStreamReader = new InputStreamReader(domainSitemap.openStream());
-				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-				String inputLine;
-				while ((inputLine = bufferedReader.readLine()) != null) {
-					if (inputLine.startsWith("Sitemap:")) {
-						System.out.println("AltMap-Found: <-|-> " + inputLine);
-					}
-					if (inputLine.startsWith("Disallow:")) {
-						System.out.println(inputLine);
-					}
+			InputStreamReader inputStreamReader = new InputStreamReader(domainSitemap.openStream());
+			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+			String inputLine;
+			while ((inputLine = bufferedReader.readLine()) != null) {
+				if (inputLine.startsWith("Sitemap:")) {
+					System.out.println("AltMap-Found: <-|-> " + inputLine);
+					result =  inputLine.split("Sitemap:")[1].replace(domain, "").trim();
+					break;
 				}
-				bufferedReader.close();
+//				if (inputLine.startsWith("Disallow:")) System.out.println(inputLine);
 			}
+			bufferedReader.close();
 		} catch (MalformedURLException e) {
 			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> MalformedURL", e);
 		} catch (SSLException e) {
