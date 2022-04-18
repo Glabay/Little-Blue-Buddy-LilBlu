@@ -2,13 +2,18 @@ package xyz.glabaystudios.web.gui.pound;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.Controllers;
 import xyz.glabaystudios.web.crawler.pound.PackLeader;
 
 import javax.net.ssl.SSLException;
+import java.awt.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -22,10 +27,21 @@ import java.util.concurrent.*;
 
 public class DocuHoundWindow {
 
-	public Label packStatusLabel;
-	public ListView<String> foundDocumentList = new ListView<>(FXCollections.observableArrayList("docx", "pdf"));
+	public Label packStatusLabel = new Label();
+	public Label foundFilesWord;
+	public Label foundFilesVideo;
+	public Label foundFilesEmbed;
+	public Label foundFilesPdf;
+	public Label foundFilesPpt;
+	public ListView<String> foundDocumentList = new ListView<>(FXCollections.observableArrayList("DOCX", "docx"));
+	public ListView<String> foundPdfList = new ListView<>(FXCollections.observableArrayList("PDF", "pdf"));
+	public ListView<String> foundPowerPointList = new ListView<>(FXCollections.observableArrayList("PPT", "ppt"));
+	public ListView<String> foundVideoList = new ListView<>(FXCollections.observableArrayList("VID", "mp4"));
+	public ListView<String> foundEmbeddedList = new ListView<>(FXCollections.observableArrayList("EMBED", "iframe"));
+	public ListView<String> foundAdditionalLinksList = new ListView<>(FXCollections.observableArrayList("LINKS", "uri"));
 	public Button saveDocsBtn;
 	public CheckBox videoChk;
+	public CheckBox embedChk;
 	public CheckBox pptChk;
 	public CheckBox pdfChk;
 	public CheckBox docxChk;
@@ -38,8 +54,8 @@ public class DocuHoundWindow {
 
 
 	public void prepareThePackForTheHunt() {
-		Alert domainAlert = new Alert(AlertType.WARNING,  "You must provide a place for the hounds to search<br>Please provide a Domain.", ButtonType.CLOSE, ButtonType.OK);
-		Alert unknownDocument = new Alert(AlertType.CONFIRMATION,  "What documents are you hunting?.", ButtonType.CLOSE, ButtonType.OK);
+		Alert domainAlert = new Alert(AlertType.WARNING,  "You must provide a place for the hounds to search<br>Please provide a Domain.", ButtonType.CLOSE);
+		Alert unknownDocument = new Alert(AlertType.WARNING,  "What documents are you hunting?.", ButtonType.CLOSE);
 
 		domainAlert.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
 		unknownDocument.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
@@ -55,36 +71,13 @@ public class DocuHoundWindow {
 		}
 		packStatusLabel.setText("");
 		String sitemap = getSitemapPage(domain, false);
-		URL url;
 		String target = domain + sitemap;
-		try {
-			url = new URL(target);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.connect();
-			connection.setInstanceFollowRedirects(true);
-			int code = connection.getResponseCode();
-			System.out.println("Code: " + code);
-			boolean redirect = false;
-			if (code != HttpURLConnection.HTTP_OK) {
-				if (code == HttpURLConnection.HTTP_MOVED_TEMP
-				 || code == HttpURLConnection.HTTP_MOVED_PERM
-				 || code == HttpURLConnection.HTTP_SEE_OTHER)
-					redirect = true;
-			}
-			if (redirect) {
-				target = connection.getHeaderField("Location");
-				System.out.println("Rerouting  <-|-> " + target);
-			} else target = String.valueOf(connection.getURL());
-		} catch (IOException e) {
-			NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> InputOutput", e);
-		}
 
 		packStatusLabel.setText("Waking the pack leader...");
 		PackLeader docuHoundPack = new PackLeader(domain);
 		docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound");
 		docuHoundPack.setTarget(target);
-		docuHoundPack.setTargetDocuments(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected());
+		docuHoundPack.setTargetDocuments(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected(), embedChk.isSelected());
 		executorService = Executors.newSingleThreadExecutor();
 		packStatusLabel.setText("Preparing the pack.");
 		Future<HashMap<String, String>> docuHoundLeader = executorService.submit(docuHoundPack::getFoundDocuments);
@@ -136,7 +129,10 @@ public class DocuHoundWindow {
 				String inputLine;
 				while ((inputLine = bufferedReader.readLine()) != null) {
 					if (inputLine.startsWith("Sitemap:")) {
-						System.out.println("AltMap-Found: " + inputLine);
+						System.out.println("AltMap-Found: <-|-> " + inputLine);
+					}
+					if (inputLine.startsWith("Disallow:")) {
+						System.out.println(inputLine);
 					}
 				}
 				bufferedReader.close();
@@ -155,10 +151,47 @@ public class DocuHoundWindow {
 	private void updateFoundList() {
 		packStatusLabel.setText("Pack is returning...");
 		System.out.println("Done!");
+
 		foundDocumentList.getItems().clear();
+		foundPowerPointList.getItems().clear();
+		foundEmbeddedList.getItems().clear();
+		foundPdfList.getItems().clear();
+		foundVideoList.getItems().clear();
+		foundAdditionalLinksList.getItems().clear();
+
+
 		System.out.println("Collected: " + foundDocuments.size() + " documents");
-		int index = 0;
-		for (String link : foundDocuments.keySet()) foundDocumentList.getItems().add(index++, foundDocuments.get(link) + " | " + link);
+		for (String link : foundDocuments.keySet()) {
+			String key = foundDocuments.get(link);
+			switch(key) {
+				case "Document":
+					foundDocumentList.getItems().add(foundDocumentList.getItems().size(), key + " | " + link);
+					break;
+				case "PDF":
+					foundPdfList.getItems().add(foundPdfList.getItems().size(), key + " | " + link);
+					break;
+				case "PPT":
+					foundPowerPointList.getItems().add(foundPowerPointList.getItems().size(), key + " | " + link);
+					break;
+				case "MEDIA":
+					foundVideoList.getItems().add(foundVideoList.getItems().size(), key + " | " + link);
+					break;
+				case "EMBED":
+					foundEmbeddedList.getItems().add(foundEmbeddedList.getItems().size(), key + " | " + link);
+					break;
+				default:
+					foundAdditionalLinksList.getItems().add(foundAdditionalLinksList.getItems().size(), key + " | " + link);
+					break;
+			}
+		}
+		foundFilesWord.setText("Total amount of Word files: " + foundDocumentList.getItems().size());
+		foundFilesVideo.setText("Total amount of Video files: " + foundVideoList.getItems().size());
+		foundFilesEmbed.setText("Total Embedded links found: " + foundEmbeddedList.getItems().size());
+		foundFilesPdf.setText("Total amount of PDF files: " + foundPdfList.getItems().size());
+		foundFilesPpt.setText("Total PowerPoint files: " + foundPowerPointList.getItems().size());
+		System.out.println("Total additional files: " + foundAdditionalLinksList.getItems().size());
+		foundAdditionalLinksList.getItems().forEach(System.out::println);
+
 		packStatusLabel.setText("Found " + foundDocuments.size() + " documents!");
 		saveDocsBtn.setDisable(false);
 	}
@@ -210,6 +243,13 @@ public class DocuHoundWindow {
 			docuDownloader.passDocumentList((HashMap<String, String>) foundDocuments);
 			docuDownloader.start();
 		}
-		//TODO: Open Downloads Directory
+		try {
+			String downloadDir = (System.getProperty("user.home") + "/Downloads/");
+			Desktop desktop = Desktop.getDesktop();
+			desktop.open(new File(downloadDir));
+			System.out.println("opening downloads dir...");
+		} catch (IOException ignore) {
+			System.out.println("Failed opening downloads dir...");
+		}
 	}
 }

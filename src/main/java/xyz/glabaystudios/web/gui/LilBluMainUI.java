@@ -246,7 +246,7 @@ public class LilBluMainUI implements Initializable {
 	public void prepTheHounds() {
 		Scene scene = setupTheScene(Controllers.getDocuHoundWindow());
 		if (scene != null) {
-			Stage stage = setTheStage(scene, "Document DocumentHound");
+			Stage stage = setTheStage(scene, "DocuHound");
 			stage.setOnCloseRequest(windowEvent -> Controllers.removeDocuHoundWindow());
 			stage.show();
 		}

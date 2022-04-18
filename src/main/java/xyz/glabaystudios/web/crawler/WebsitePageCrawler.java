@@ -16,6 +16,8 @@ public interface WebsitePageCrawler {
 			return Jsoup.connect((usingSecureConnection ? "https://" : "http://") + domain)
 					.userAgent(userAgent)
 					.timeout(42000)
+					.ignoreContentType(true)
+					.ignoreHttpErrors(true)
 					.get();
 		} catch (UnknownHostException e) {
 			NetworkExceptionHandler.handleException("getContent -> UnknownHost " + domain, e);
