@@ -35,7 +35,10 @@ public class Downloader extends Thread {
 		String localPath = System.getProperty("user.home") + "/Downloads/" + getFormattedNameForFolder();
 		while(!isInterrupted()) {
 			Arrays.stream(foundDocuments.keySet().toArray(new String[0])).forEach(link -> {
-				String[] split = link.replace(" ", "%20").replace("http://", "").split("/");
+				String[] split = link
+						.replace(" ", "%20")
+						.replace("http://", "")
+						.split("/");
 				String cleanFileName = split[split.length-1].replace("%20", " ");
 				if (cleanFileName.startsWith("http") && cleanFileName.contains("youtube.com/")) handleLinks(cleanFileName);
 				else {
@@ -46,9 +49,9 @@ public class Downloader extends Thread {
 							if (!file2.exists()) new File(localPath).mkdirs();
 							file.createNewFile();
 						}
-						String uri = domain + link.replace(" ", "%20");
+						String uri = domain + link.replace(" ", "%20").replace("../", "");
 						if (link.startsWith("http")) uri = link.replace(" ", "%20");
-//					System.out.println("URI: " + uri);
+//					    System.out.println("URI: " + uri);
 						HttpURLConnection connection = (HttpURLConnection) new URL(uri).openConnection();
 						connection.setRequestMethod("GET");
 						InputStream in = connection.getInputStream();

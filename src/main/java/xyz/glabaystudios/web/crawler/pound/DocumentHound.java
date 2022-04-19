@@ -39,6 +39,7 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 	}
 
 	public void setTarget(String pageTarget) {
+		if (pageTarget == null) return;
 		this.domainPage = pageTarget;
 		if (domainPage.endsWith("/")) this.domainPage = domainPage.substring(0, domainPage.length()-1);
 	}

@@ -24,8 +24,8 @@ public class PackLeader extends DocumentHound {
 		pagesToSniff = new ArrayList<>();
 	}
 
-	private void connectAndFetchSitemap(String domainsSitemap) {
-		System.out.println("Looking for the sitemap");
+	private void connectAndFetchSitemap() {
+		if (domainPage == null) return;
 		String domain = domainPage
 				.toLowerCase()
 				.replace("http://", "")
@@ -73,7 +73,7 @@ public class PackLeader extends DocumentHound {
 	}
 
 	public HashMap<String, String> getFoundDocuments() {
-		connectAndFetchSitemap(domainPage);
+		connectAndFetchSitemap();
 		pack = new ArrayList<>(pagesToSniff.size());
 		System.out.println("Calling for a pack of: " + pagesToSniff.size());
 
@@ -107,5 +107,9 @@ public class PackLeader extends DocumentHound {
 				if (finalCopyOfLinks.size() > 0) System.out.println("Successful hunt!");
 			}
 		}
+	}
+
+	public void setMakeshiftSitemap(List<String> makeshiftSitemap) {
+		pagesToSniff.addAll(makeshiftSitemap);
 	}
 }

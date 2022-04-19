@@ -6,6 +6,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.Controllers;
 import xyz.glabaystudios.web.crawler.pound.PackLeader;
@@ -49,8 +53,8 @@ public class DocuHoundWindow {
 	public Button relTheHndBtn;
 	public TextField domainField;
 
-	ExecutorService executorService;
-	Map<String, String> foundDocuments = new HashMap<>();
+	private ExecutorService executorService;
+	private Map<String, String> foundDocuments = new HashMap<>();
 
 
 	public void prepareThePackForTheHunt() {
@@ -69,36 +73,103 @@ public class DocuHoundWindow {
 			unknownDocument.show();
 			return;
 		}
+		reset();
 		packStatusLabel.setText("");
 		String sitemap = getSitemapPage(domain, false);
 		String target = domain + sitemap;
-
-		packStatusLabel.setText("Waking the pack leader...");
-		PackLeader docuHoundPack = new PackLeader(domain);
-		docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound");
-		docuHoundPack.setTarget(target);
-		docuHoundPack.setTargetDocuments(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected(), embedChk.isSelected());
-		executorService = Executors.newSingleThreadExecutor();
-		packStatusLabel.setText("Preparing the pack.");
-		Future<HashMap<String, String>> docuHoundLeader = executorService.submit(docuHoundPack::getFoundDocuments);
-//		relTheHndBtn.setDisable(true);
-		packStatusLabel.setText("The pack is out hunting for documents...");
-		System.out.println("Checking in on the pack");
-		while(!executorService.isShutdown()) {
+		List<String> makeshiftSitemap = null;
+		if (sitemap == null) {
+			makeshiftSitemap = new ArrayList<>();
+			System.out.println("well, no robots guidance, no map, no light, no problem... I think...");
+			System.out.println("Let's see here what we find, time to start an adventure...");
+			target = domain;
+			String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393";
 			try {
-				foundDocuments = docuHoundLeader.get(90, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Interrupted " + e.getCause(), e);
-			} catch (ExecutionException e) {
-				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Execution " + e.getCause(), e);
-			} catch (TimeoutException e) {
+				Document homepage = Jsoup.connect(domain)
+						.userAgent(userAgent)
+						.timeout(30000)
+						.ignoreContentType(true)
+						.ignoreHttpErrors(true)
+						.get();
+				Elements elements = homepage.getElementsByAttribute("href");
+				for (Element ele : elements) {
+					if (ele.text().isEmpty()) continue;
+					String pageLink = ele.attr("href");
+					if (pageLink.toLowerCase().startsWith("http")) continue;
+					if (pageLink.toLowerCase().startsWith("www.")) continue;
+					String link = (domain.endsWith("/") ? domain : (domain + "/"));
 
-				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Timeout " + e.getCause(), e);
-			} finally {
-				executorService.shutdown();
+					System.out.println(link + pageLink);
+					makeshiftSitemap.add(link + pageLink);
+				}
+				System.out.println("Found pages: " + makeshiftSitemap.size());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
-		updateFoundList();
+
+		String message = "I am about to launch a tool which will crawl over the pages of your domain." +
+						 "\n\n" +
+						 "Do you consent to letting us crawl over your existing site and search for files.";
+
+		Alert notification = new Alert(AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.CANCEL);
+		notification.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
+		notification.setTitle("Please confirm with your customer!");
+		String finalTarget = target;
+		List<String> finalMakeshiftSitemap = makeshiftSitemap;
+		notification.showAndWait().ifPresent(buttonType -> {
+			if (buttonType.getText().equalsIgnoreCase("yes")) {
+				packStatusLabel.setText("Waking the pack leader...");
+				PackLeader docuHoundPack = new PackLeader(domain);
+				docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound");
+				if (sitemap == null) {
+					docuHoundPack.setTarget(null);
+					docuHoundPack.setMakeshiftSitemap(finalMakeshiftSitemap);
+				} else docuHoundPack.setTarget(finalTarget);
+
+				docuHoundPack.setTargetDocuments(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected(), embedChk.isSelected());
+				executorService = Executors.newSingleThreadExecutor();
+
+
+				Future<HashMap<String, String>> docuHoundLeader = executorService.submit(docuHoundPack::getFoundDocuments);
+//		        relTheHndBtn.setDisable(true); // TODO: Uncomment before production
+				packStatusLabel.setText("The pack is out hunting for documents...");
+				System.out.println("Checking in on the pack");
+				while(!executorService.isShutdown()) {
+					try {
+						foundDocuments = docuHoundLeader.get(90, TimeUnit.SECONDS);
+					} catch (InterruptedException e) {
+						NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Interrupted " + e.getCause(), e);
+					} catch (ExecutionException e) {
+						NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Execution " + e.getCause(), e);
+					} catch (TimeoutException e) {
+						NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Timeout " + e.getCause(), e);
+					} finally {
+						packStatusLabel.setText("Pack is returning...");
+						executorService.shutdown();
+					}
+				}
+				updateFoundList();
+			} else System.out.println(buttonType);
+		});
+
+
+	}
+
+	private void reset() {
+		foundDocumentList.getItems().clear();
+		foundPowerPointList.getItems().clear();
+		foundEmbeddedList.getItems().clear();
+		foundPdfList.getItems().clear();
+		foundVideoList.getItems().clear();
+		foundAdditionalLinksList.getItems().clear();
+
+		foundFilesWord.setText("Total amount of Word files: 0");
+		foundFilesVideo.setText("Total amount of Video files: 0");
+		foundFilesEmbed.setText("Total Embedded links found: 0");
+		foundFilesPdf.setText("Total amount of PDF files: 0");
+		foundFilesPpt.setText("Total PowerPoint files: 0");
+
 	}
 
 	private String getSitemapPage(String domain, boolean fallback) {
@@ -113,18 +184,28 @@ public class DocuHoundWindow {
 			connection.setInstanceFollowRedirects(true);
 			int code = connection.getResponseCode();
 			System.out.println("Code: " + code);
+			if (code == 404) return null;
+			if (code == HttpURLConnection.HTTP_MOVED_TEMP || code == HttpURLConnection.HTTP_MOVED_PERM || code == HttpURLConnection.HTTP_SEE_OTHER)
+				return getSitemapPage(connection.getHeaderField("Location"), true);
 			InputStreamReader inputStreamReader = new InputStreamReader(domainSitemap.openStream());
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 			String inputLine;
+			boolean foundMap = false;
 			while ((inputLine = bufferedReader.readLine()) != null) {
 				if (inputLine.startsWith("Sitemap:")) {
 					System.out.println("AltMap-Found: <-|-> " + inputLine);
-					result =  inputLine.split("Sitemap:")[1].replace(domain, "").trim();
+					result =  inputLine.split("Sitemap:")[1].replace((fallback ? (domain.replace("/robots.txt", "")) : domain), "").trim();
+					System.out.println("AltMap: <-|-> " + result);
+					foundMap = true;
 					break;
 				}
 //				if (inputLine.startsWith("Disallow:")) System.out.println(inputLine);
 			}
 			bufferedReader.close();
+			System.out.println("There was " + (foundMap ? "a" : "no") + " sitemap found" + (foundMap ? (": " + result) : "") );
+			if (!foundMap) {
+				return getSitemapPage(domain + "/sitemap.xml", true);
+			}
 		} catch (MalformedURLException e) {
 			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> MalformedURL", e);
 		} catch (SSLException e) {
@@ -137,16 +218,9 @@ public class DocuHoundWindow {
 	}
 
 	private void updateFoundList() {
-		packStatusLabel.setText("Pack is returning...");
 		System.out.println("Done!");
 
-		foundDocumentList.getItems().clear();
-		foundPowerPointList.getItems().clear();
-		foundEmbeddedList.getItems().clear();
-		foundPdfList.getItems().clear();
-		foundVideoList.getItems().clear();
-		foundAdditionalLinksList.getItems().clear();
-
+		reset();
 
 		System.out.println("Collected: " + foundDocuments.size() + " documents");
 		for (String link : foundDocuments.keySet()) {
@@ -177,6 +251,7 @@ public class DocuHoundWindow {
 		foundFilesEmbed.setText("Total Embedded links found: " + foundEmbeddedList.getItems().size());
 		foundFilesPdf.setText("Total amount of PDF files: " + foundPdfList.getItems().size());
 		foundFilesPpt.setText("Total PowerPoint files: " + foundPowerPointList.getItems().size());
+
 		System.out.println("Total additional files: " + foundAdditionalLinksList.getItems().size());
 		foundAdditionalLinksList.getItems().forEach(System.out::println);
 
