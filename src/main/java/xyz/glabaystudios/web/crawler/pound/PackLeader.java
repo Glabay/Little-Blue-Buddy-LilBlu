@@ -77,12 +77,9 @@ public class PackLeader extends DocumentHound {
 		pack = new ArrayList<>(pagesToSniff.size());
 		System.out.println("Calling for a pack of: " + pagesToSniff.size());
 
-		// pop up to confirm that there are X pages going to be crawled for documents ^ video links/embedded iframes
 		assignHounds();
 		System.out.println("Pack is assigned pages.");
 
-		// pop up for the agent to confirm with the customer that they are allowing us to crawl their domain for documents ^ video links/embedded iframes
-		// and that this may take a moment
 		releaseThePack(pack.stream().<Callable<HashMap<String, String>>>map(hound -> hound::getFoundDocuments).collect(Collectors.toList()));
 		return finalCopyOfLinks;
 	}
