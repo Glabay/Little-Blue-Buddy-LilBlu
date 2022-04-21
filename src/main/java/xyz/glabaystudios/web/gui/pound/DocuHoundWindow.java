@@ -107,10 +107,12 @@ public class DocuHoundWindow {
 				throw new RuntimeException(e);
 			}
 		}
-
+		String searchingFor = getSearchingFor(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected(), embedChk.isSelected());
 		String message = "I am about to launch a tool which will crawl over the pages of your domain." +
-						 "\n\n" +
-						 "Do you consent to letting us crawl over your existing site and search for files.";
+				"\n" +
+				searchingFor +
+				"\n" +
+				"Do you consent to letting us crawl over your existing site and search for files.";
 
 		Alert notification = new Alert(AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.CANCEL);
 		notification.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
@@ -154,6 +156,17 @@ public class DocuHoundWindow {
 		});
 
 
+	}
+
+	private String getSearchingFor(boolean word, boolean pdf, boolean video, boolean ppt, boolean embedded) {
+		StringBuilder searchFor = new StringBuilder();
+		searchFor.append("We will be searching for:\n");
+		if (word) searchFor.append("Word documents (.docx, .doc, .docm)\n");
+		if (pdf) searchFor.append("PDF documents\n");
+		if (video) searchFor.append("Audio Video Files (.mp4, .mov, .avi)\n");
+		if (ppt) searchFor.append("PowerPoint files\n");
+		if (embedded) searchFor.append("Embedded videos\n");
+		return searchFor.toString();
 	}
 
 	private void reset() {

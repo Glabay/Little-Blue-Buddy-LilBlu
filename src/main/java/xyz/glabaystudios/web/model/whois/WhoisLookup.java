@@ -122,7 +122,7 @@ public class WhoisLookup {
 					System.out.println("Cert Public Key Format : " + cert.getPublicKey().getFormat());
 				});
 			} catch (SSLException e) {
-				NetworkExceptionHandler.handleException("dumpCertData -> SSL", e);
+//				NetworkExceptionHandler.handleException("dumpCertData -> SSL", e);
 				getResult().setSslSecure(false);
 			} catch (IOException e) {
 				NetworkExceptionHandler.handleException("dumpCertData -> InputOutput", e);
