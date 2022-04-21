@@ -1,6 +1,6 @@
 package xyz.glabaystudios.web.model.whois;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.model.social.SocialLink;
@@ -13,31 +13,29 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class Whois {
 
-	String domainName;
+	private String domainName;
+	private String updatedDate;
+	private String createdDate;
+	private String registryExpiryDate;
+	private String registrar;
 
-	String updatedDate;
-	String createdDate;
-	String registryExpiryDate;
+	private List<String> mailServers = new ArrayList<>();
+	private List<String> nameServers = new ArrayList<>();
+	private List<String> socialMediaLinks = new ArrayList<>();
+	private Map<String, SocialLink> socialLinkMap = new HashMap<>();
 
-	String registrar;
+	private boolean hasMailServer;
+	private boolean newlyRegistered;
+	private boolean isInFamily;
+	private boolean sslSecure;
 
-	List<String> mailServers = new ArrayList<>();
-	List<String> nameServers = new ArrayList<>();
-	List<String> socialMediaLinks = new ArrayList<>();
-	Map<String, SocialLink> socialLinkMap = new HashMap<>();
+	private int mailServerCount;
 
-	boolean hasMailServer;
-	boolean isNewlyRegistered;
-	boolean isInFamily;
-	boolean sslSecure;
-
-	int mailServerCount;
-
-	final Byte DAYS_TO_CONSIDER_NEW = 7;
+	private final Byte DAYS_TO_CONSIDER_NEW = 7;
 
 	public boolean isDomainNewlyCreated() {
 		try {
@@ -53,7 +51,7 @@ public class Whois {
 		return false;
 	}
 
-	int getThisYear() {
+	private int getThisYear() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDateTime now = LocalDateTime.now();
 		String[] today = dtf.format(now).split("-"); // Year[0] Month[1] Day[2]
@@ -64,7 +62,7 @@ public class Whois {
 	 * Calculate the Date the Domain will no longer be considered as "NEW"
 	 * @return The Date that we will not consider a Domain as New
 	 */
-	Date getDateToConsiderNoLongerNew() throws ParseException {
+	private Date getDateToConsiderNoLongerNew() throws ParseException {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDateTime now = LocalDateTime.now();
 		String[] today = dtf.format(now).split("-"); // Year[0] Month[1] Day[2]
@@ -91,7 +89,7 @@ public class Whois {
 	 * @param month The month to get the days from
 	 * @return the total number of days in a month, taking leap year into consideration
 	 */
-	int getDaysInMonth(int year, int month) {
+	private int getDaysInMonth(int year, int month) {
 		if (month == 2) return calcLeapYearForFeb(year) ? 29 : 28;
 		else if ( month == 4 || month == 6 || month == 9 || month == 11 ) return 30;
 		else return 31;
@@ -103,7 +101,7 @@ public class Whois {
 	 * @param year the year to check
 	 * @return if it is or is not a leap year
 	 */
-	boolean calcLeapYearForFeb(int year) {
+	private boolean calcLeapYearForFeb(int year) {
 		// if the year is divided by 4
 		if (year % 4 == 0) {
 			// if the year is century
@@ -126,7 +124,7 @@ public class Whois {
 				+ "\nregistrar='" + registrar + '\''
 				+ "\nnameServers=" + nameServers
 				+ "\nhasMailServer=" + hasMailServer
-				+ "\nisNewlyRegistered=" + isNewlyRegistered
+				+ "\nisNewlyRegistered=" + newlyRegistered
 				+ "\nisInFamily=" + isInFamily;
 	}
 }

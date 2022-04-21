@@ -11,11 +11,9 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Locale;
@@ -43,22 +41,22 @@ public class WhoisLookup {
 
 	public void filterDumpedData() {
 		result = new Whois();
-		result.domainName = DOMAIN.toUpperCase();
+		getResult().setDomainName(DOMAIN.toUpperCase());
 		int mxCount = doLookup();
-		result.hasMailServer = mxCount > 0;
-		if (mxCount > 0) result.mailServerCount = mxCount;
+		getResult().setHasMailServer(mxCount > 0);
+		if (mxCount > 0) getResult().setMailServerCount(mxCount);
 
 		Arrays.stream(dumpWhoisResultsFromDomain().split("\r\n")).forEach(line -> {
-			if (line.toLowerCase().contains("updated date:")) result.updatedDate = (line.split(": "))[1].split("T")[0];
-			if (line.toLowerCase().contains("creation date:")) result.createdDate = (line.split(": "))[1].split("T")[0];
-			if (line.toLowerCase().contains("registry expiry date:")) result.registryExpiryDate = (line.split(": "))[1].split("T")[0];
-			if (line.toLowerCase().contains("registrar:")) result.registrar = line.split(": ")[1];
-			if (line.toLowerCase().contains("name server:")) result.nameServers.add(line.split(": ")[1]);
+			if (line.toLowerCase().contains("updated date:")) getResult().setUpdatedDate((line.split(": "))[1].split("T")[0]);
+			if (line.toLowerCase().contains("creation date:")) getResult().setCreatedDate((line.split(": "))[1].split("T")[0]);
+			if (line.toLowerCase().contains("registry expiry date:")) getResult().setRegistryExpiryDate((line.split(": "))[1].split("T")[0]);
+			if (line.toLowerCase().contains("registrar:")) getResult().setRegistrar(line.split(": ")[1]);
+			if (line.toLowerCase().contains("name server:")) getResult().getNameServers().add(line.split(": ")[1]);
 		});
-		if (result.registrar == null && result.hasMailServer) {
+		if (getResult().getRegistrar() == null && getResult().isHasMailServer()) {
 			// verify the mail server and the domain we're looking at are the same "host"
 			String[] searchingDomain = DOMAIN.split("[.]");
-			String[] mxServers = result.mailServers.get(0).split("[.]");
+			String[] mxServers = getResult().getMailServers().get(0).split("[.]");
 			String parent = null;
 			// loop over the broken 'sub-domains' on the mail server and if it matches up with the searching domain (minus the extension) best guess is it's the parent
 			for (int i = 0; i < mxServers.length; i++) {
@@ -75,43 +73,37 @@ public class WhoisLookup {
 				// should more or less execute this again with the "parent" domain and then populate the results
 				System.out.println(parent);
 			}
-		} else if (result.registrar == null) {
-			error("registrar is null");
-		} else if (result.registrar.equalsIgnoreCase("REGISTER.COM, INC.") || result.registrar.equalsIgnoreCase("NETWORK SOLUTIONS, INC."))
-			result.isInFamily = true;
+		} else if (getResult().getRegistrar() == null) {
+			String errorMessageFlag = "registrar is null";
+			String message = "Error: %s, please reference: https://www.whois.com/whois/%s";
+			System.out.printf(Locale.getDefault(), (message) + "%n", errorMessageFlag, getResult().getDomainName().toLowerCase());
+		} else if (getResult().getRegistrar().equalsIgnoreCase("REGISTER.COM, INC.") || getResult().getRegistrar().equalsIgnoreCase("NETWORK SOLUTIONS, INC."))
+			getResult().setInFamily(true);
 
-		if (canValidateDate()) result.isNewlyRegistered = result.isDomainNewlyCreated();
-		else result.isNewlyRegistered = false;
-
+		if (canValidateDate()) getResult().setNewlyRegistered(getResult().isDomainNewlyCreated());
+		else getResult().setNewlyRegistered(false);
 
 		checkSecureConnection();
 
-		result.socialLinkMap = new SocialCrawler(result.domainName, result.sslSecure).getSocialLinkMap();
-	}
-
-	private void error(String errorMessageFlag) {
-		String message = "Error: %s, please reference: https://www.whois.com/whois/%s";
-		System.out.printf(Locale.getDefault(), (message) + "%n", errorMessageFlag, getResult().getDomainName().toLowerCase());
-		//TODO: Make a GET request of a specific who-is site, and then scrape the data
-		//      If this returns a 404 error or 5XX then provide a button on the UI to open a browser with the URI and Parameters provided for quick intel
+		getResult().setSocialLinkMap(new SocialCrawler(getResult().getDomainName(), getResult().isSslSecure()).getSocialLinkMap());
 	}
 
 	boolean canValidateDate() {
-		return result.createdDate != null && result.registryExpiryDate != null;
+		return getResult().getCreatedDate() != null && getResult().getRegistryExpiryDate() != null;
 	}
 
 	private void checkSecureConnection() {
 		try {
 			URL url = new URL("https://" + DOMAIN);
 			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-			con.setConnectTimeout(750);
+			con.setConnectTimeout(1000);
 			dumpCertData(con);
 		} catch (java.net.SocketTimeoutException e) {
 			NetworkExceptionHandler.handleException("checkSecureConnection -> java.net.SocketTimeout", e);
-			result.sslSecure = false;
+			getResult().setSslSecure(false);
 		} catch (IOException e) {
 			NetworkExceptionHandler.handleException("checkSecureConnection -> InputOutput", e);
-			result.sslSecure = false;
+			getResult().setSslSecure(false);
 		}
 	}
 
@@ -121,32 +113,23 @@ public class WhoisLookup {
 				System.out.println("Response Code : " + con.getResponseCode());
 				System.out.println("Cipher Suite : " + con.getCipherSuite());
 				System.out.println("\n");
-				result.sslSecure = true;
+				getResult().setSslSecure(true);
 
-				Certificate[] certs = con.getServerCertificates();
-				for (Certificate cert : certs) {
+				Arrays.stream(con.getServerCertificates()).forEach(cert -> {
 					System.out.println("Cert Type : " + cert.getType());
 					System.out.println("Cert Hash Code : " + cert.hashCode());
 					System.out.println("Cert Public Key Algorithm : " + cert.getPublicKey().getAlgorithm());
 					System.out.println("Cert Public Key Format : " + cert.getPublicKey().getFormat());
-				}
-			} catch (SSLHandshakeException e) {
-				NetworkExceptionHandler.handleException("dumpCertData -> SSLHandshake", e);
-				result.sslSecure = false;
-			} catch (java.net.SocketTimeoutException e) {
-				NetworkExceptionHandler.handleException("dumpCertData -> java.net.SocketTimeout", e);
-				result.sslSecure = false;
-			} catch (UnknownHostException e) {
-				NetworkExceptionHandler.handleException("dumpCertData -> UnknownHost", e);
-				result.sslSecure = false;
-			}  catch (IOException e) {
+				});
+			} catch (SSLException e) {
+				NetworkExceptionHandler.handleException("dumpCertData -> SSL", e);
+				getResult().setSslSecure(false);
+			} catch (IOException e) {
 				NetworkExceptionHandler.handleException("dumpCertData -> InputOutput", e);
-				result.sslSecure = false;
-				System.out.println("Failed due to an IO-Exception - 4.");
+				getResult().setSslSecure(false);
 			} catch (Exception e) {
 				NetworkExceptionHandler.handleException("dumpCertData -> Default", e);
-				result.sslSecure = false;
-				System.out.println("Failed due to Unknown Exception - 5.");
+				getResult().setSslSecure(false);
 			}
 		}
 	}
@@ -174,7 +157,7 @@ public class WhoisLookup {
 
 	}
 
-	String queryWithWhoisServer(String domainName) {
+	private String queryWithWhoisServer(String domainName) {
 		String result = "";
 		WhoisClient whois = new WhoisClient();
 		try {
@@ -189,14 +172,14 @@ public class WhoisLookup {
 
 	}
 
-	String getWhoisServer(String whois) {
+	private String getWhoisServer(String whois) {
 		String result = "";
 		matcher = pattern.matcher(whois);
 		while (matcher.find()) result = matcher.group(1);
 		return result;
 	}
 
-	int doLookup() {
+	private int doLookup() {
 		Hashtable<String, String> env = new Hashtable<>();
 		env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
 		DirContext ictx;
@@ -207,7 +190,7 @@ public class WhoisLookup {
 			attrs = ictx.getAttributes( DOMAIN, new String[] { "MX" });
 			attr = attrs.get("MX");
 			if (attr != null) {
-				for (int i = 0; i < attr.size(); i++) result.mailServers.add(attr.get(i).toString());
+				for (int i = 0; i < attr.size(); i++) getResult().getMailServers().add(attr.get(i).toString());
 			}
 		} catch (NamingException e) {
 			NetworkExceptionHandler.handleException("doLookup -> Naming", e);

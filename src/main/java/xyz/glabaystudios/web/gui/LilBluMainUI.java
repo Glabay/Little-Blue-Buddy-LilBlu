@@ -102,11 +102,14 @@ public class LilBluMainUI implements Initializable {
 	}
 
 	public void executeWhoisLookup() {
-		String domain = domainField.getText();
+		String domain = domainField.getText()
+				.replace("https://", "")
+				.replace("http://", "")
+				.replace("www.", "");
 		if (domain.isEmpty()) return;
 		Alert dnsInfo = new Alert(Alert.AlertType.INFORMATION);
 		dnsInfo.initOwner(Controllers.getMainWindow().getScene().getWindow());
-		WhoisLookup lookup = new WhoisLookup(domain);
+		WhoisLookup lookup = new WhoisLookup(domain.split("/")[0]);
 		lookup.filterDumpedData();
 		resetEverything();
 
@@ -225,22 +228,12 @@ public class LilBluMainUI implements Initializable {
 	}
 
 	public void loadDocumentRenamer() {
-		Stage mainWindow = (Stage) Controllers.getMainWindow().getScene().getWindow();
-		Stage docuNamer = new Stage();
-		docuNamer.setResizable(false);
-		docuNamer.getIcons().add(new Image(String.valueOf(LilBlu.class.getResource("lilblu.png"))));
-		docuNamer.setTitle("Document Renaming");
-		docuNamer.setScene(new Scene(Controllers.getDocumentRenamingWindow()));
-		docuNamer.setOnShown(windowEvent -> mainWindow.hide());
-		docuNamer.setOnHidden(windowEvent -> reopenMainWindow());
-		docuNamer.setOnCloseRequest(windowEvent -> reopenMainWindow());
-
-		docuNamer.show();
-	}
-
-	private void reopenMainWindow() {
-		Controllers.removeDocumentRenamingWindow();
-		((Stage) Controllers.getMainWindow().getScene().getWindow()).show();
+		Scene scene = setupTheScene(Controllers.getDocumentRenamingWindow());
+		if (scene != null) {
+			Stage stage = setTheStage(scene, "Document Renaming");
+			stage.setOnCloseRequest(windowEvent -> Controllers.removeDocumentRenamingWindow());
+			stage.show();
+		}
 	}
 
 	public void prepTheHounds() {
