@@ -132,7 +132,7 @@ public class DocumentHound implements Runnable, WebsitePageCrawler {
 							}
 						}
 					}
-					if (str.contains(".mp4")) {
+					if (str.contains(".mp4") || str.contains(".mov") || str.contains(".avi")) {
 //						System.out.println("Media File Found: " + str);
 						foundDocuments.put(str, "MEDIA");
 					}
