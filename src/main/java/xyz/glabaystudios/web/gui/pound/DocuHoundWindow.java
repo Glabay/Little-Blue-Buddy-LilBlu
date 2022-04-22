@@ -8,7 +8,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import xyz.glabaystudios.net.NetworkExceptionHandler;
 import xyz.glabaystudios.web.Controllers;
@@ -53,24 +52,26 @@ public class DocuHoundWindow {
 	public Button relTheHndBtn;
 	public TextField domainField;
 
-	private ExecutorService executorService;
 	private Map<String, String> foundDocuments = new HashMap<>();
 
 
 	public void prepareThePackForTheHunt() {
-		Alert domainAlert = new Alert(AlertType.WARNING,  "You must provide a place for the hounds to search<br>Please provide a Domain.", ButtonType.CLOSE);
-		Alert unknownDocument = new Alert(AlertType.WARNING,  "What documents are you hunting?.", ButtonType.CLOSE);
+		Alert domainAlert = new Alert(AlertType.WARNING, "Warning", ButtonType.CLOSE);
 
 		domainAlert.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
-		unknownDocument.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
 
 		if (domainField.getText().isEmpty()) {
+			domainAlert.setTitle("Missing Domain");
+			domainAlert.setContentText("You must provide a place for the hounds to search<br>Please provide a Domain.");
 			domainAlert.show();
 			return;
 		}
 		String domain = getFormattedDomain(domainField.getText());
-		if (!docxChk.isSelected() && !pptChk.isSelected() && !pdfChk.isSelected() && !videoChk.isSelected()) {
-			unknownDocument.show();
+
+		if (!docxChk.isSelected() && !pptChk.isSelected() && !pdfChk.isSelected() && !videoChk.isSelected() && !embedChk.isSelected()) {
+			domainAlert.setTitle("Unknown Request");
+			domainAlert.setContentText("What documents are you hunting for?");
+			domainAlert.show();
 			return;
 		}
 		reset();
@@ -79,96 +80,77 @@ public class DocuHoundWindow {
 		String target = domain + sitemap;
 		List<String> makeshiftSitemap = null;
 		if (sitemap == null) {
-			makeshiftSitemap = new ArrayList<>();
-			System.out.println("well, no robots guidance, no map, no light, no problem... I think...");
-			System.out.println("Let's see here what we find, time to start an adventure...");
 			target = domain;
-			String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393";
-			try {
-				Document homepage = Jsoup.connect(domain)
-						.userAgent(userAgent)
-						.timeout(30000)
-						.ignoreContentType(true)
-						.ignoreHttpErrors(true)
-						.get();
-				Elements elements = homepage.getElementsByAttribute("href");
-				for (Element ele : elements) {
-					if (ele.text().isEmpty()) continue;
-					String pageLink = ele.attr("href");
-					if (pageLink.toLowerCase().startsWith("http")) continue;
-					if (pageLink.toLowerCase().startsWith("www.")) continue;
-					String link = (domain.endsWith("/") ? domain : (domain + "/"));
+			makeshiftSitemap = buildMakeshiftSitemap(domain);
+		}
+		releaseTheLeader(domain, target, (sitemap == null), makeshiftSitemap);
+	}
 
-					System.out.println(link + pageLink);
-					makeshiftSitemap.add(link + pageLink);
-				}
+	/**
+	 * Looking at the home page, we will look over all href's and then filter over them to make sure they are for this domain
+	 * @param domain the domain to search
+	 * @return A List of page links to assign to the pack
+	 */
+	private List<String> buildMakeshiftSitemap(String domain) {
+		List<String> makeshiftSitemap = new ArrayList<>();
+		System.out.println("well, no robots guidance, no map, no light, no problem... I think...");
+		System.out.println("Let's see here what we find, time to start an adventure...");
+		String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393";
+			try {
+				Document homepage = Jsoup.connect(domain).userAgent(userAgent).timeout(30000).ignoreContentType(true).ignoreHttpErrors(true).get();
+				Elements elements = homepage.getElementsByAttribute("href");
+				elements.stream()
+						.filter(ele -> !ele.text().isEmpty())
+						.map(ele -> ele.attr("href"))
+						.filter(pageLink -> !pageLink.toLowerCase().startsWith("http"))
+						.filter(pageLink -> !pageLink.toLowerCase().startsWith("www."))
+						.forEach(pageLink -> {
+							String link = (domain.endsWith("/") ? domain : (domain + "/"));
+							System.out.println(link + pageLink);
+							makeshiftSitemap.add(link + pageLink);
+						});
 				System.out.println("Found pages: " + makeshiftSitemap.size());
-			} catch (IOException e) {
+			} catch(IOException e) {
 				throw new RuntimeException(e);
 			}
-		}
-		String searchingFor = getSearchingFor(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected(), embedChk.isSelected());
-		String message = "I am about to launch a tool which will crawl over the pages of your domain." +
-				"\n" +
-				searchingFor +
-				"\n" +
-				"Do you consent to letting us crawl over your existing site and search for files.";
+		return makeshiftSitemap;
+	}
 
-		Alert notification = new Alert(AlertType.CONFIRMATION, message, ButtonType.YES, ButtonType.CANCEL);
-		notification.initOwner(Controllers.getDocuHoundWindow().getScene().getWindow());
-		notification.setTitle("Please confirm with your customer!");
-		String finalTarget = target;
-		List<String> finalMakeshiftSitemap = makeshiftSitemap;
-		notification.showAndWait().ifPresent(buttonType -> {
-			if (buttonType.getText().equalsIgnoreCase("yes")) {
-				packStatusLabel.setText("Waking the pack leader...");
-				PackLeader docuHoundPack = new PackLeader(domain);
-				docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound");
-				if (sitemap == null) {
-					docuHoundPack.setTarget(null);
-					docuHoundPack.setMakeshiftSitemap(finalMakeshiftSitemap);
-				} else docuHoundPack.setTarget(finalTarget);
+	private void releaseTheLeader(String domain, String target, boolean usingMakeshiftMap, List<String> makeshiftSitemap) {
+		packStatusLabel.setText("Waking the pack leader...");
+		PackLeader docuHoundPack = new PackLeader(domain);
+		docuHoundPack.setName("Glabay-Studios-LilBlu-DocuHound");
+		if (usingMakeshiftMap) {
+			docuHoundPack.setTarget(null);
+			docuHoundPack.setMakeshiftSitemap(makeshiftSitemap);
+		} else docuHoundPack.setTarget(target);
 
-				docuHoundPack.setTargetDocuments(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected(), embedChk.isSelected());
-				executorService = Executors.newSingleThreadExecutor();
-
-
-				Future<HashMap<String, String>> docuHoundLeader = executorService.submit(docuHoundPack::getFoundDocuments);
+		docuHoundPack.setTargetDocuments(docxChk.isSelected(), pdfChk.isSelected(), videoChk.isSelected(), pptChk.isSelected(), embedChk.isSelected());
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		Future<HashMap<String, String>> docuHoundLeader = executorService.submit(docuHoundPack::getFoundDocuments);
 //		        relTheHndBtn.setDisable(true); // TODO: Uncomment before production
-				packStatusLabel.setText("The pack is out hunting for documents...");
-				System.out.println("Checking in on the pack");
-				while(!executorService.isShutdown()) {
-					try {
-						foundDocuments = docuHoundLeader.get(90, TimeUnit.SECONDS);
-					} catch (InterruptedException e) {
-						NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Interrupted " + e.getCause(), e);
-					} catch (ExecutionException e) {
-						NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Execution " + e.getCause(), e);
-					} catch (TimeoutException e) {
-						NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Timeout " + e.getCause(), e);
-					} finally {
-						packStatusLabel.setText("Pack is returning...");
-						executorService.shutdown();
-					}
-				}
-				updateFoundList();
-			} else System.out.println(buttonType);
-		});
-
-
+		packStatusLabel.setText("The pack is out hunting for documents...");
+		System.out.println("Checking in on the pack");
+		while(!executorService.isShutdown()) {
+			try {
+				foundDocuments = docuHoundLeader.get(90, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Interrupted " + e.getCause(), e);
+			} catch (ExecutionException e) {
+				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Execution " + e.getCause(), e);
+			} catch (TimeoutException e) {
+				NetworkExceptionHandler.handleException("prepareThePackForTheHunt -> Timeout " + e.getCause(), e);
+			} finally {
+				packStatusLabel.setText("Pack is returning...");
+				executorService.shutdown();
+			}
+		}
+		updateFoundList();
 	}
 
-	private String getSearchingFor(boolean word, boolean pdf, boolean video, boolean ppt, boolean embedded) {
-		StringBuilder searchFor = new StringBuilder();
-		searchFor.append("We will be searching for:\n");
-		if (word) searchFor.append("Word documents (.docx, .doc, .docm)\n");
-		if (pdf) searchFor.append("PDF documents\n");
-		if (video) searchFor.append("Video Files and Links (.mp4, .mov, .avi)\n");
-		if (ppt) searchFor.append("PowerPoint files\n");
-		if (embedded) searchFor.append("Embedded videos\n");
-		return searchFor.toString();
-	}
-
+	/**
+	 * A quick reset of the fields and list views
+	 */
 	private void reset() {
 		foundDocumentList.getItems().clear();
 		foundPowerPointList.getItems().clear();
@@ -185,6 +167,17 @@ public class DocuHoundWindow {
 
 	}
 
+	/**
+	 * Looking for a sitemap
+	 * <p>Looking first for a /robots.txt we will see if there is a sitemap listed
+	 * If there is no Robots.txt then we will just fallback to the domain/sitemap.xml<br>
+	 * From here we will also check for Redirects, and follow the rabbit to wonderland<br>
+	 * If we don't have a Sitemap.xml then we return null to trigger a call to DocuHoundWindow.buildMakeshiftSitemap()
+	 * </p>
+	 * @param domain the domain to check
+	 * @param fallback if there is no robots.txt we will fallback to sitemap.xml
+	 * @return a link to the sitemap or null if nothing is found.
+	 */
 	private String getSitemapPage(String domain, boolean fallback) {
 		String result = "/sitemap.xml";
 		try {
@@ -222,7 +215,7 @@ public class DocuHoundWindow {
 		} catch (MalformedURLException e) {
 			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> MalformedURL", e);
 		} catch (SSLException e) {
-			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> SSLException\nChecking again without SSL", e);
+			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> SSLException", e);
 		} catch (IOException e) {
 			NetworkExceptionHandler.handleException("connectAndFetchSitemap -> InputOutput", e);
 		}
@@ -285,6 +278,15 @@ public class DocuHoundWindow {
 		Controllers.removeDocuHoundWindow();
 	}
 
+	/**
+	 * Saving the Documents<br>
+	 * <p>
+	 *     Looking at the size of the documents the pack found, for every 16 documents<br>
+	 *     we will have a hound handle fetching these 16, and if there happens to be anything left over,<br>
+	 *     we will send out one more hound to fetch the straggler
+	 * </p>
+	 * Once the pack has been assigned their documents and gone to fetch, we will open the Downloads' directory if it is not opened already.
+	 */
 	public void saveDocuments() {
 		System.out.println("Time to Save the Documents...");
 		saveDocsBtn.setDisable(true);
@@ -304,7 +306,6 @@ public class DocuHoundWindow {
 					tempDocs.put(links.get(linkIndex), "LilBluDoc-"+i);
 					linkIndex++;
 					if (linkIndex > links.size()) break;
-
 				}
 				docuDownloader = new Downloader();
 				docuDownloader.setDomain(getFormattedDomain(domainField.getText()));
