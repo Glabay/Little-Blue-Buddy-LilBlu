@@ -215,6 +215,7 @@ public class LilBluMainUI implements Initializable {
 
 	public void executeMouseActionOnSocialLink(MouseEvent mouseEvent) {
 		String selectedItem = socialMediaListView.getSelectionModel().getSelectedItem();
+		if (selectedItem == null) return;
 		String socialPlatform = selectedItem.split(":")[0];
 		String url = getResult().getSocialLinkMap().get(selectedItem.split(":")[0]).getSocialPlatformURL();
 		String button = mouseEvent.getButton().name();

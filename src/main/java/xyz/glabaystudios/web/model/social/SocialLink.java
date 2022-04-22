@@ -19,7 +19,8 @@ public class SocialLink {
 			"spotify",
 			"soundcloud",
 			"itunes.apple",
-			"snapchat"
+			"snapchat",
+			"bandcamp.com"
 	};
 
 	private String socialPlatformURL;
