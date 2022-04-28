@@ -30,6 +30,11 @@ public class ExceptionEmail extends LilBluEmail {
 	
 	public ExceptionEmail setRecipients(Recipients primary, Recipients... additional) {
 		recipientsList = new ArrayList<>();
+		boolean devMode = Boolean.parseBoolean(LilBlu.getProperties().getProperty("developer-mode"));
+		if (devMode) {
+			recipientsList.add(Recipients.GLABAY_STUDIOS);
+			return this;
+		}
 		recipientsList.add(primary);
 		if (additional.length > 0) Collections.addAll(recipientsList, additional);
 		return this;

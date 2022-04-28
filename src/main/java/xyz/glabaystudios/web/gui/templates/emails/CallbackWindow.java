@@ -142,7 +142,7 @@ public class CallbackWindow implements Initializable {
 		if (canContinue()) {
 			emailCallbackBtn.setDisable(true);
 			new ExceptionEmail("Scheduled Callback - " + System.getProperty("user.name"))
-					.setRecipients(Recipients.GLABAY_STUDIOS)
+					.setRecipients(Recipients.SPOKAN)
 					.setEmailMessage(getScheduledCallback().toString())
 					.sendException();
 			emailCallbackBtn.setText("Sent!");

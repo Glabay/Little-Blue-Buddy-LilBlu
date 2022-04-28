@@ -115,7 +115,7 @@ public class MissedEventWindow implements Initializable {
 		}
 
 		new ExceptionEmail(emailTemplate.getEvent())
-				.setRecipients(Recipients.GLABAY_STUDIOS)
+				.setRecipients(Recipients.E_TIME)
 				.setEmailMessage(emailTemplate.toString())
 				.sendException();
 		sendCloseAction();
