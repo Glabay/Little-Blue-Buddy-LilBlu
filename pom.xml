@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>1.18.24</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -42,11 +42,11 @@
             <artifactId>junit-jupiter</artifactId>
             <version>5.8.2</version>
         </dependency>
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>1.7</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>commons-validator</groupId>-->
+<!--            <artifactId>commons-validator</artifactId>-->
+<!--            <version>1.7</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -63,6 +63,7 @@
             <artifactId>dependency-check-maven</artifactId>
             <version>7.1.0</version>
             <type>maven-plugin</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
