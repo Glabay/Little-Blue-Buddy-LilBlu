@@ -1,29 +1,22 @@
 # Welcome to GlabayStudios - Little Blue Buddy (LilBlu)
 
-<img alt="LittleBlue" height="164" src="lilblu-large.png" width="164"/><img alt="Newfold Digital" height="123" src="newfold-asset-logo.png" width="474"/>
+<img height="164" src="lilblu-large.png" alt="Little Blue Buddy" width="164"/> <img alt="Newfold Digital" height="123" src="newfold-asset-logo.png" width="474"/>
 
 ## **Key Features:**
-### Document Renaming;
-> Rename multiple images for a gallery in 3 seconds flat (or any other document type)
-> Use a predefined prefix, or enter your own before submitting
 
 ### DNS Panel (Main UI);
+<a href="https://glabay.github.io/Little-Blue-Buddy-LilBlu/Details.md" target="_blank">DNS Panel</a>
+
 > Using the WhoIs API, fetch and collect the DNS records from the given Domain.
-> These Records are the Main Exchange Servers, Name Server, and more data for a fast check with the Customer while on the Welcome Call to ensure whether or not we must have a chat with our customer about the potential of service interruptions with their mail services
+> These Records are the Main Exchange Servers, Name Server, and more data for a fast check with the Customer while on the Welcome Call to ensure whether we must have a chat with our customer about the potential of service interruptions with their mail services
 >
 > Clear reminder if the call was inbound or Outbound
-> - Never forget an End of Call Survey again. 😤 🤦
+> - Never forget an End of Call Survey again.
 >
 > Always ready notepad that will scroll
 
 ### Social Presence;
 > Check the domain for any Social Media links (Facebook, Twitter, Instagram, TikTok, LinkedIn, YouTube, Reddit, Soundcloud, Spotify, etc...)
-
-### Exception emailing;
-> As soon as you open the window the date and time are auto-filled; easy tracking of your time, forget to enter a finish time? Not a problem, it will fill it in when you hit send. That will email off to the right depot/distro in the correct/expected template
-
-### Templates;
-> doing a follow-up, scheduling a callback? most of the redundant information will auto-populate then you only have to worry about the reason, then click to have the expected template copied to your Clipboard
 
 ### DocuHound;
 > Take a look for the Site Map of a provided domain
@@ -33,6 +26,16 @@
 > - - The Pack Leader will assign one hound to fetch and download 16 files. anything remaining will have another hound pick up the slack.
 > - - Creating the document first, and then filling it with data allows for the clear view that if the file is empty, we have to ask the customer for the file; avoiding a Production Hold.
 > - This is a key feature that will help agents not miss or overlook files
+
+### Document Renaming;
+> Rename multiple images for a gallery in 3 seconds flat (or any other document type)
+> Use a predefined prefix, or enter your own before submitting
+
+### Exception emailing;
+> As soon as you open the window the date and time are autofilled; easy tracking of your time, forget to enter a finish time? Not a problem, it will fill it in when you hit send. That will email off to the right depot/distro in the correct/expected template
+
+### Templates;
+> doing a follow-up, scheduling a callback? most of the redundant information will auto-populate then you only have to worry about the reason, then click to have the expected template copied to your Clipboard
 
 ### EcomRipper;
 > When the customer has an existing Online-Store and wishes to use the products from it
