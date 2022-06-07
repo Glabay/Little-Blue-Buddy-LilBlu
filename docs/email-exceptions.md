@@ -50,3 +50,17 @@ The Template pasted into the JotPad for an example of the format.
 <br>The '_Agent_' is taken from the logged-in user of the Computer.
 
 ![Follow-Up-Text](images/exceptions/follow-up-template-text.png)
+
+
+####    Scheduled Callback
+When we have to make a callback, this is the window that will be displayed
+
+![Scheduled-Callback-Blank](images/exceptions/scheduled-callback.png)
+
+Once we fill in the required information and have the reasoning filled in.
+
+![Scheduled-Callback-Blank](images/exceptions/scheduled-callback-filled.png)
+
+The template copied to your clipboard or sent to Email
+
+![Scheduled-Callback-Blank](images/exceptions/scheduled-callback-example.png)
