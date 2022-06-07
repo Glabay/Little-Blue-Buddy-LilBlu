@@ -1,11 +1,11 @@
 # Welcome to GlabayStudios - Little Blue Buddy (LilBlu)
 
-<img height="164" src="lilblu-large.png" alt="Little Blue Buddy" width="164"/> <img alt="Newfold Digital" height="123" src="newfold-asset-logo.png" width="474"/>
+<img height="164" src="images/lilblu-large.png" alt="Little Blue Buddy" width="164"/><img alt="Newfold Digital" height="123" src="images/newfold-asset-logo.png" width="474"/>
 
 ## **Key Features:**
 
 ### DNS Panel (Main UI);
-<a href="https://glabay.github.io/Little-Blue-Buddy-LilBlu/Details" target="_blank">DNS Panel</a>
+<a href="https://glabay.github.io/Little-Blue-Buddy-LilBlu/dns-details" target="_blank">DNS Panel details</a>
 
 > Using the WhoIs API, fetch and collect the DNS records from the given Domain.
 > These Records are the Main Exchange Servers, Name Server, and more data for a fast check with the Customer while on the Welcome Call to ensure whether we must have a chat with our customer about the potential of service interruptions with their mail services
