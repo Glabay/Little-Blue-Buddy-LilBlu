@@ -19,6 +19,8 @@
 > Check the domain for any Social Media links (Facebook, Twitter, Instagram, TikTok, LinkedIn, YouTube, Reddit, Soundcloud, Spotify, etc...)
 
 ### DocuHound;
+<a href="https://glabay.github.io/Little-Blue-Buddy-LilBlu/docuhound-details" target="_blank">DocuHound Details</a>
+
 > Take a look for the Site Map of a provided domain
 > - Taking note of the URI to each page, we will assign one hound per page to sniff out any and all documents that fit the provided requirement.
 > - From the hunt, the hounds will report the document links to the pack leader, who; when completed, will update the window with the final report.

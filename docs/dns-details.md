@@ -54,3 +54,5 @@ A little helper when remembering if the call was inbound or not for that end of 
 ![Inbound](images/dns/survey-opt-inbound.png)
 
 ![Outbound](images/dns/survey-opt-outbound.png)
+
+<a href="https://glabay.github.io/Little-Blue-Buddy-LilBlu" target="_blank">Main Page</a>
