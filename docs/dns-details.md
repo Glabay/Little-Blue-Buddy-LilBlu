@@ -1,4 +1,4 @@
-# Welcome to GlabayStudios - Little Blue Buddy (LilBlu)
+# Little Blue Buddy (DNS-Panel)
 
 <img height="164" src="images/lilblu-large.png" alt="Little Blue Buddy" width="164"/><img alt="Newfold Digital" height="123" src="images/newfold-asset-logo.png" width="474"/>
 
