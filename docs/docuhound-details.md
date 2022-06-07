@@ -1,10 +1,10 @@
-# Little Blue Buddy (DNS-Panel)
+# Little Blue Buddy (DocuHound)
 
 <img height="164" src="images/lilblu-large.png" alt="Little Blue Buddy" width="164"/><img alt="Newfold Digital" height="123" src="images/newfold-asset-logo.png" width="474"/>
 
 
-## Document Hound
-Here you are greeted with a window where you can enter the domain you will to sniff out.
+## Document Hounds
+Here you are greeted with a window where you can enter the domain, and check off the filters you wish to apply. Then you will release the hounds to sniff out files and links.
 
 ![DocuHound-Empty](images/docuhound/DocuHound-Blank.png)
 
@@ -20,6 +20,9 @@ When we "_Save Documents_" we will be creating a folder in the download folder o
 ![DocuHound-Saving](images/docuhound/DocuHound-saving.png)
 
 If there are any Embedded videos or links to YouTube videos/channels will be saved to a text file '_LilBlu_Links.txt_' within that file
+
+<br>Once we've collected the links for the files to download. If we have more than 16 files to download, we will use multiple hounds to 'fetch' the files to download. This will be 16 files per hound and anything remaining after that will get a final hound to pick up the slack.
+<br>Creating the document first, and then filling it with data allows for the clear view that if the file is empty, we have to ask the customer for the file; avoiding a Production Hold.
 
 ## Filter
 
@@ -46,6 +49,3 @@ The filter will search for document types based on the filter applied.
     - *.mov
     - *.mp4
     - *.avi
-
-
-<a href="https://glabay.github.io/Little-Blue-Buddy-LilBlu" target="_blank">Main Page</a>
